@@ -8,6 +8,7 @@ package mr
 
 import "os"
 import "strconv"
+import "time"
 
 //
 // example to show how to declare the arguments
@@ -23,8 +24,32 @@ type ExampleReply struct {
 }
 
 // Add your RPC definitions here.
+type TaskArgs struct {
+	Work_id int
+	Send_time time.Time
+}
 
+type TaskReply struct {
+	Task *Task
+	Single int
+}
 
+type RegisterArgs struct {
+}
+
+type RegisterReply struct {
+	WorkerId int
+}
+
+type ReportTaskArgs struct {
+	Task_type string
+	Done     bool
+	Task  	 *Task
+	WorkerId int
+}
+
+type ReportTaskReply struct {
+}
 // Cook up a unique-ish UNIX-domain socket name
 // in /var/tmp, for the master.
 // Can't use the current directory since

@@ -1,0 +1,1057 @@
+*** Starting wc test.
+initMapTask success 8
+master status is 1 
+master status is 1 
+master status is 1 
+RegWorker: 1
+RegWorker: 2
+register success work_id: 2
+register success work_id: 1
+RegWorker: 3
+master GetOneTask worker id :1 
+GetOneTask case1 
+master GetOneTask worker id :2 
+GetOneTask case1 
+register success work_id: 3
+GetTask success task_type: MapTask, work_id: 2,task_id: 6
+do MapTask work_id: 2, task_id: 6
+GetTask success task_type: MapTask, work_id: 1,task_id: 7
+do MapTask work_id: 1, task_id: 7
+master GetOneTask worker id :3 
+GetOneTask case1 
+GetTask success task_type: MapTask, work_id: 3,task_id: 5
+do MapTask work_id: 3, task_id: 5
+MapTask finish work_id: 3, task_id: 5
+ReportTask worker_id:3, task_id: 5, task_type: MapTask
+Running queue remove Finish task_id: 5, Worker_id: 3 
+report task success work_id :3, task_id: 5 
+master GetOneTask worker id :3 
+GetOneTask case1 
+GetTask success task_type: MapTask, work_id: 3,task_id: 4
+do MapTask work_id: 3, task_id: 4
+master status is 1 
+master status is 1 
+MapTask finish work_id: 1, task_id: 7
+ReportTask worker_id:1, task_id: 7, task_type: MapTask
+Running queue remove Finish task_id: 7, Worker_id: 1 
+report task success work_id :1, task_id: 7 
+master GetOneTask worker id :1 
+GetOneTask case1 
+GetTask success task_type: MapTask, work_id: 1,task_id: 3
+do MapTask work_id: 1, task_id: 3
+master status is 1 
+MapTask finish work_id: 2, task_id: 6
+ReportTask worker_id:2, task_id: 6, task_type: MapTask
+Running queue remove Finish task_id: 6, Worker_id: 2 
+report task success work_id :2, task_id: 6 
+master GetOneTask worker id :2 
+GetOneTask case1 
+GetTask success task_type: MapTask, work_id: 2,task_id: 2
+do MapTask work_id: 2, task_id: 2
+master status is 1 
+MapTask finish work_id: 3, task_id: 4
+ReportTask worker_id:3, task_id: 4, task_type: MapTask
+Running queue remove Finish task_id: 4, Worker_id: 3 
+report task success work_id :3, task_id: 4 
+master GetOneTask worker id :3 
+GetOneTask case1 
+GetTask success task_type: MapTask, work_id: 3,task_id: 1
+do MapTask work_id: 3, task_id: 1
+master status is 1 
+MapTask finish work_id: 1, task_id: 3
+ReportTask worker_id:1, task_id: 3, task_type: MapTask
+Running queue remove Finish task_id: 3, Worker_id: 1 
+report task success work_id :1, task_id: 3 
+master GetOneTask worker id :1 
+GetOneTask case1 
+GetTask success task_type: MapTask, work_id: 1,task_id: 0
+do MapTask work_id: 1, task_id: 0
+master status is 2 
+MapTask finish work_id: 2, task_id: 2
+ReportTask worker_id:2, task_id: 2, task_type: MapTask
+Running queue remove Finish task_id: 2, Worker_id: 2 
+report task success work_id :2, task_id: 2 
+master GetOneTask worker id :2 
+GetOneTask case2 
+worker get task fail 100
+There are no idle tasks here! task_type: , work_id: 2,task_id: 0
+MapTask finish work_id: 1, task_id: 0
+ReportTask worker_id:1, task_id: 0, task_type: MapTask
+Running queue remove Finish task_id: 0, Worker_id: 1 
+report task success work_id :1, task_id: 0 
+master GetOneTask worker id :1 
+GetOneTask case2 
+worker get task fail 100
+There are no idle tasks here! task_type: , work_id: 1,task_id: 0
+master status is 2 
+MapTask finish work_id: 3, task_id: 1
+ReportTask worker_id:3, task_id: 1, task_type: MapTask
+Running queue remove Finish task_id: 1, Worker_id: 3 
+initReduceTask success 10
+report task success work_id :3, task_id: 1 
+master GetOneTask worker id :3 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 3,task_id: 9
+do ReduceTask work_id: 3, task_id: 9
+master status is 3 
+master GetOneTask worker id :2 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 2,task_id: 8
+do ReduceTask work_id: 2, task_id: 8
+ReportTask worker_id:3, task_id: 9, task_type: ReduceTask
+Running queue remove Finish task_id: 9, Worker_id: 3 
+report task success work_id :3, task_id: 9 
+master GetOneTask worker id :3 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 3,task_id: 7
+do ReduceTask work_id: 3, task_id: 7
+master GetOneTask worker id :1 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 1,task_id: 6
+do ReduceTask work_id: 1, task_id: 6
+master status is 3 
+ReportTask worker_id:2, task_id: 8, task_type: ReduceTask
+Running queue remove Finish task_id: 8, Worker_id: 2 
+report task success work_id :2, task_id: 8 
+master GetOneTask worker id :2 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 2,task_id: 5
+do ReduceTask work_id: 2, task_id: 5
+ReportTask worker_id:3, task_id: 7, task_type: ReduceTask
+Running queue remove Finish task_id: 7, Worker_id: 3 
+report task success work_id :3, task_id: 7 
+master GetOneTask worker id :3 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 3,task_id: 4
+do ReduceTask work_id: 3, task_id: 4
+master status is 3 
+ReportTask worker_id:2, task_id: 5, task_type: ReduceTask
+Running queue remove Finish task_id: 5, Worker_id: 2 
+report task success work_id :2, task_id: 5 
+master GetOneTask worker id :2 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 2,task_id: 3
+do ReduceTask work_id: 2, task_id: 3
+ReportTask worker_id:1, task_id: 6, task_type: ReduceTask
+Running queue remove Finish task_id: 6, Worker_id: 1 
+report task success work_id :1, task_id: 6 
+master GetOneTask worker id :1 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 1,task_id: 2
+do ReduceTask work_id: 1, task_id: 2
+master status is 3 
+ReportTask worker_id:3, task_id: 4, task_type: ReduceTask
+Running queue remove Finish task_id: 4, Worker_id: 3 
+report task success work_id :3, task_id: 4 
+master GetOneTask worker id :3 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 3,task_id: 1
+do ReduceTask work_id: 3, task_id: 1
+ReportTask worker_id:2, task_id: 3, task_type: ReduceTask
+Running queue remove Finish task_id: 3, Worker_id: 2 
+report task success work_id :2, task_id: 3 
+master GetOneTask worker id :2 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 2,task_id: 0
+do ReduceTask work_id: 2, task_id: 0
+ReportTask worker_id:3, task_id: 1, task_type: ReduceTask
+Running queue remove Finish task_id: 1, Worker_id: 3 
+master status is 4 
+report task success work_id :3, task_id: 1 
+master GetOneTask worker id :3 
+GetOneTask case4 
+worker get task fail 100
+There are no idle tasks here! task_type: , work_id: 3,task_id: 0
+ReportTask worker_id:2, task_id: 0, task_type: ReduceTask
+Running queue remove Finish task_id: 0, Worker_id: 2 
+report task success work_id :2, task_id: 0 
+master GetOneTask worker id :2 
+GetOneTask case4 
+worker get task fail 100
+There are no idle tasks here! task_type: , work_id: 2,task_id: 0
+master status is 4 
+ReportTask worker_id:1, task_id: 2, task_type: ReduceTask
+Running queue remove Finish task_id: 2, Worker_id: 1 
+report task success work_id :1, task_id: 2 
+master GetOneTask worker id :1 
+GetOneTask case5 
+worker get task fail 500
+master GetOneTask worker id :3 
+GetOneTask case5 
+worker get task fail 500
+master GetOneTask worker id :2 
+GetOneTask case5 
+worker get task fail 500
+--- wc test: PASS
+*** Starting indexer test.
+initMapTask success 8
+master status is 1 
+master status is 1 
+master status is 1 
+RegWorker: 1
+RegWorker: 2
+register success work_id: 2
+register success work_id: 1
+master GetOneTask worker id :2 
+GetOneTask case1 
+master GetOneTask worker id :1 
+GetOneTask case1 
+GetTask success task_type: MapTask, work_id: 2,task_id: 7
+GetTask success task_type: MapTask, work_id: 1,task_id: 6
+do MapTask work_id: 2, task_id: 7
+do MapTask work_id: 1, task_id: 6
+MapTask finish work_id: 2, task_id: 7
+ReportTask worker_id:2, task_id: 7, task_type: MapTask
+Running queue remove Finish task_id: 7, Worker_id: 2 
+report task success work_id :2, task_id: 7 
+master GetOneTask worker id :2 
+GetOneTask case1 
+GetTask success task_type: MapTask, work_id: 2,task_id: 5
+do MapTask work_id: 2, task_id: 5
+MapTask finish work_id: 1, task_id: 6
+ReportTask worker_id:1, task_id: 6, task_type: MapTask
+Running queue remove Finish task_id: 6, Worker_id: 1 
+report task success work_id :1, task_id: 6 
+master GetOneTask worker id :1 
+GetOneTask case1 
+GetTask success task_type: MapTask, work_id: 1,task_id: 4
+do MapTask work_id: 1, task_id: 4
+MapTask finish work_id: 2, task_id: 5
+ReportTask worker_id:2, task_id: 5, task_type: MapTask
+Running queue remove Finish task_id: 5, Worker_id: 2 
+report task success work_id :2, task_id: 5 
+master GetOneTask worker id :2 
+GetOneTask case1 
+GetTask success task_type: MapTask, work_id: 2,task_id: 3
+do MapTask work_id: 2, task_id: 3
+master status is 1 
+MapTask finish work_id: 1, task_id: 4
+ReportTask worker_id:1, task_id: 4, task_type: MapTask
+Running queue remove Finish task_id: 4, Worker_id: 1 
+report task success work_id :1, task_id: 4 
+master GetOneTask worker id :1 
+GetOneTask case1 
+GetTask success task_type: MapTask, work_id: 1,task_id: 2
+do MapTask work_id: 1, task_id: 2
+MapTask finish work_id: 2, task_id: 3
+ReportTask worker_id:2, task_id: 3, task_type: MapTask
+Running queue remove Finish task_id: 3, Worker_id: 2 
+report task success work_id :2, task_id: 3 
+master GetOneTask worker id :2 
+GetOneTask case1 
+GetTask success task_type: MapTask, work_id: 2,task_id: 1
+do MapTask work_id: 2, task_id: 1
+MapTask finish work_id: 1, task_id: 2
+ReportTask worker_id:1, task_id: 2, task_type: MapTask
+Running queue remove Finish task_id: 2, Worker_id: 1 
+report task success work_id :1, task_id: 2 
+master GetOneTask worker id :1 
+GetOneTask case1 
+GetTask success task_type: MapTask, work_id: 1,task_id: 0
+do MapTask work_id: 1, task_id: 0
+MapTask finish work_id: 2, task_id: 1
+ReportTask worker_id:2, task_id: 1, task_type: MapTask
+Running queue remove Finish task_id: 1, Worker_id: 2 
+report task success work_id :2, task_id: 1 
+master GetOneTask worker id :2 
+GetOneTask case2 
+worker get task fail 100
+There are no idle tasks here! task_type: , work_id: 2,task_id: 0
+MapTask finish work_id: 1, task_id: 0
+ReportTask worker_id:1, task_id: 0, task_type: MapTask
+Running queue remove Finish task_id: 0, Worker_id: 1 
+initReduceTask success 10
+report task success work_id :1, task_id: 0 
+master GetOneTask worker id :1 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 1,task_id: 9
+do ReduceTask work_id: 1, task_id: 9
+ReportTask worker_id:1, task_id: 9, task_type: ReduceTask
+Running queue remove Finish task_id: 9, Worker_id: 1 
+report task success work_id :1, task_id: 9 
+master GetOneTask worker id :1 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 1,task_id: 8
+do ReduceTask work_id: 1, task_id: 8
+master status is 3 
+ReportTask worker_id:1, task_id: 8, task_type: ReduceTask
+Running queue remove Finish task_id: 8, Worker_id: 1 
+report task success work_id :1, task_id: 8 
+master GetOneTask worker id :1 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 1,task_id: 7
+do ReduceTask work_id: 1, task_id: 7
+ReportTask worker_id:1, task_id: 7, task_type: ReduceTask
+Running queue remove Finish task_id: 7, Worker_id: 1 
+report task success work_id :1, task_id: 7 
+master GetOneTask worker id :1 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 1,task_id: 6
+do ReduceTask work_id: 1, task_id: 6
+ReportTask worker_id:1, task_id: 6, task_type: ReduceTask
+Running queue remove Finish task_id: 6, Worker_id: 1 
+report task success work_id :1, task_id: 6 
+master GetOneTask worker id :1 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 1,task_id: 5
+do ReduceTask work_id: 1, task_id: 5
+ReportTask worker_id:1, task_id: 5, task_type: ReduceTask
+Running queue remove Finish task_id: 5, Worker_id: 1 
+report task success work_id :1, task_id: 5 
+master GetOneTask worker id :1 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 1,task_id: 4
+do ReduceTask work_id: 1, task_id: 4
+ReportTask worker_id:1, task_id: 4, task_type: ReduceTask
+Running queue remove Finish task_id: 4, Worker_id: 1 
+report task success work_id :1, task_id: 4 
+master GetOneTask worker id :1 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 1,task_id: 3
+do ReduceTask work_id: 1, task_id: 3
+master status is 3 
+ReportTask worker_id:1, task_id: 3, task_type: ReduceTask
+Running queue remove Finish task_id: 3, Worker_id: 1 
+report task success work_id :1, task_id: 3 
+master GetOneTask worker id :1 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 1,task_id: 2
+do ReduceTask work_id: 1, task_id: 2
+ReportTask worker_id:1, task_id: 2, task_type: ReduceTask
+Running queue remove Finish task_id: 2, Worker_id: 1 
+report task success work_id :1, task_id: 2 
+master GetOneTask worker id :1 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 1,task_id: 1
+do ReduceTask work_id: 1, task_id: 1
+ReportTask worker_id:1, task_id: 1, task_type: ReduceTask
+Running queue remove Finish task_id: 1, Worker_id: 1 
+report task success work_id :1, task_id: 1 
+master GetOneTask worker id :1 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 1,task_id: 0
+do ReduceTask work_id: 1, task_id: 0
+master GetOneTask worker id :2 
+GetOneTask case4 
+worker get task fail 100
+There are no idle tasks here! task_type: , work_id: 2,task_id: 0
+ReportTask worker_id:1, task_id: 0, task_type: ReduceTask
+Running queue remove Finish task_id: 0, Worker_id: 1 
+report task success work_id :1, task_id: 0 
+master GetOneTask worker id :1 
+GetOneTask case5 
+worker get task fail 500
+master GetOneTask worker id :2 
+GetOneTask case5 
+worker get task fail 500
+--- indexer test: PASS
+*** Starting map parallelism test.
+initMapTask success 8
+master status is 1 
+master status is 1 
+master status is 1 
+RegWorker: 1
+RegWorker: 2
+register success work_id: 2
+register success work_id: 1
+master GetOneTask worker id :2 
+GetOneTask case1 
+master GetOneTask worker id :1 
+GetOneTask case1 
+GetTask success task_type: MapTask, work_id: 2,task_id: 7
+do MapTask work_id: 2, task_id: 7
+GetTask success task_type: MapTask, work_id: 1,task_id: 6
+do MapTask work_id: 1, task_id: 6
+master status is 1 
+master status is 1 
+MapTask finish work_id: 2, task_id: 7
+MapTask finish work_id: 1, task_id: 6
+ReportTask worker_id:2, task_id: 7, task_type: MapTask
+Running queue remove Finish task_id: 7, Worker_id: 2 
+ReportTask worker_id:1, task_id: 6, task_type: MapTask
+Running queue remove Finish task_id: 6, Worker_id: 1 
+report task success work_id :2, task_id: 7 
+report task success work_id :1, task_id: 6 
+master GetOneTask worker id :2 
+GetOneTask case1 
+master GetOneTask worker id :1 
+GetOneTask case1 
+GetTask success task_type: MapTask, work_id: 2,task_id: 5
+do MapTask work_id: 2, task_id: 5
+GetTask success task_type: MapTask, work_id: 1,task_id: 4
+do MapTask work_id: 1, task_id: 4
+master status is 1 
+master status is 1 
+MapTask finish work_id: 2, task_id: 5
+ReportTask worker_id:2, task_id: 5, task_type: MapTask
+Running queue remove Finish task_id: 5, Worker_id: 2 
+report task success work_id :2, task_id: 5 
+master GetOneTask worker id :2 
+GetOneTask case1 
+GetTask success task_type: MapTask, work_id: 2,task_id: 3
+do MapTask work_id: 2, task_id: 3
+MapTask finish work_id: 1, task_id: 4
+ReportTask worker_id:1, task_id: 4, task_type: MapTask
+Running queue remove Finish task_id: 4, Worker_id: 1 
+report task success work_id :1, task_id: 4 
+master GetOneTask worker id :1 
+GetOneTask case1 
+GetTask success task_type: MapTask, work_id: 1,task_id: 2
+do MapTask work_id: 1, task_id: 2
+master status is 1 
+master status is 1 
+MapTask finish work_id: 2, task_id: 3
+MapTask finish work_id: 1, task_id: 2
+ReportTask worker_id:2, task_id: 3, task_type: MapTask
+Running queue remove Finish task_id: 3, Worker_id: 2 
+report task success work_id :2, task_id: 3 
+master GetOneTask worker id :2 
+GetOneTask case1 
+ReportTask worker_id:1, task_id: 2, task_type: MapTask
+Running queue remove Finish task_id: 2, Worker_id: 1 
+GetTask success task_type: MapTask, work_id: 2,task_id: 1
+do MapTask work_id: 2, task_id: 1
+report task success work_id :1, task_id: 2 
+master GetOneTask worker id :1 
+GetOneTask case1 
+GetTask success task_type: MapTask, work_id: 1,task_id: 0
+do MapTask work_id: 1, task_id: 0
+master status is 2 
+master status is 2 
+MapTask finish work_id: 1, task_id: 0
+MapTask finish work_id: 2, task_id: 1
+ReportTask worker_id:1, task_id: 0, task_type: MapTask
+Running queue remove Finish task_id: 0, Worker_id: 1 
+report task success work_id :1, task_id: 0 
+ReportTask worker_id:2, task_id: 1, task_type: MapTask
+Running queue remove Finish task_id: 1, Worker_id: 2 
+initReduceTask success 10
+master GetOneTask worker id :1 
+GetOneTask case3 
+report task success work_id :2, task_id: 1 
+GetTask success task_type: ReduceTask, work_id: 1,task_id: 9
+do ReduceTask work_id: 1, task_id: 9
+master GetOneTask worker id :2 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 2,task_id: 8
+do ReduceTask work_id: 2, task_id: 8
+ReportTask worker_id:1, task_id: 9, task_type: ReduceTask
+Running queue remove Finish task_id: 9, Worker_id: 1 
+report task success work_id :1, task_id: 9 
+ReportTask worker_id:2, task_id: 8, task_type: ReduceTask
+Running queue remove Finish task_id: 8, Worker_id: 2 
+master GetOneTask worker id :1 
+GetOneTask case3 
+report task success work_id :2, task_id: 8 
+GetTask success task_type: ReduceTask, work_id: 1,task_id: 7
+do ReduceTask work_id: 1, task_id: 7
+master GetOneTask worker id :2 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 2,task_id: 6
+do ReduceTask work_id: 2, task_id: 6
+ReportTask worker_id:1, task_id: 7, task_type: ReduceTask
+Running queue remove Finish task_id: 7, Worker_id: 1 
+report task success work_id :1, task_id: 7 
+ReportTask worker_id:2, task_id: 6, task_type: ReduceTask
+Running queue remove Finish task_id: 6, Worker_id: 2 
+master GetOneTask worker id :1 
+GetOneTask case3 
+report task success work_id :2, task_id: 6 
+GetTask success task_type: ReduceTask, work_id: 1,task_id: 5
+do ReduceTask work_id: 1, task_id: 5
+master GetOneTask worker id :2 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 2,task_id: 4
+do ReduceTask work_id: 2, task_id: 4
+ReportTask worker_id:1, task_id: 5, task_type: ReduceTask
+Running queue remove Finish task_id: 5, Worker_id: 1 
+report task success work_id :1, task_id: 5 
+ReportTask worker_id:2, task_id: 4, task_type: ReduceTask
+Running queue remove Finish task_id: 4, Worker_id: 2 
+master GetOneTask worker id :1 
+GetOneTask case3 
+report task success work_id :2, task_id: 4 
+GetTask success task_type: ReduceTask, work_id: 1,task_id: 3
+do ReduceTask work_id: 1, task_id: 3
+master GetOneTask worker id :2 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 2,task_id: 2
+do ReduceTask work_id: 2, task_id: 2
+ReportTask worker_id:1, task_id: 3, task_type: ReduceTask
+Running queue remove Finish task_id: 3, Worker_id: 1 
+report task success work_id :1, task_id: 3 
+ReportTask worker_id:2, task_id: 2, task_type: ReduceTask
+Running queue remove Finish task_id: 2, Worker_id: 2 
+master GetOneTask worker id :1 
+GetOneTask case3 
+report task success work_id :2, task_id: 2 
+GetTask success task_type: ReduceTask, work_id: 1,task_id: 1
+do ReduceTask work_id: 1, task_id: 1
+master GetOneTask worker id :2 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 2,task_id: 0
+do ReduceTask work_id: 2, task_id: 0
+ReportTask worker_id:1, task_id: 1, task_type: ReduceTask
+Running queue remove Finish task_id: 1, Worker_id: 1 
+report task success work_id :1, task_id: 1 
+ReportTask worker_id:2, task_id: 0, task_type: ReduceTask
+Running queue remove Finish task_id: 0, Worker_id: 2 
+master GetOneTask worker id :1 
+GetOneTask case5 
+report task success work_id :2, task_id: 0 
+worker get task fail 500
+master GetOneTask worker id :2 
+GetOneTask case5 
+worker get task fail 500
+--- map parallelism test: PASS
+*** Starting reduce parallelism test.
+initMapTask success 8
+master status is 1 
+master status is 1 
+master status is 1 
+RegWorker: 1
+RegWorker: 2
+register success work_id: 2
+register success work_id: 1
+master GetOneTask worker id :2 
+GetOneTask case1 
+master GetOneTask worker id :1 
+GetOneTask case1 
+GetTask success task_type: MapTask, work_id: 2,task_id: 7
+do MapTask work_id: 2, task_id: 7
+GetTask success task_type: MapTask, work_id: 1,task_id: 6
+do MapTask work_id: 1, task_id: 6
+MapTask finish work_id: 2, task_id: 7
+ReportTask worker_id:2, task_id: 7, task_type: MapTask
+Running queue remove Finish task_id: 7, Worker_id: 2 
+MapTask finish work_id: 1, task_id: 6
+report task success work_id :2, task_id: 7 
+master GetOneTask worker id :2 
+GetOneTask case1 
+ReportTask worker_id:1, task_id: 6, task_type: MapTask
+Running queue remove Finish task_id: 6, Worker_id: 1 
+GetTask success task_type: MapTask, work_id: 2,task_id: 5
+do MapTask work_id: 2, task_id: 5
+report task success work_id :1, task_id: 6 
+master GetOneTask worker id :1 
+GetOneTask case1 
+GetTask success task_type: MapTask, work_id: 1,task_id: 4
+do MapTask work_id: 1, task_id: 4
+MapTask finish work_id: 2, task_id: 5
+ReportTask worker_id:2, task_id: 5, task_type: MapTask
+Running queue remove Finish task_id: 5, Worker_id: 2 
+report task success work_id :2, task_id: 5 
+master GetOneTask worker id :2 
+GetOneTask case1 
+GetTask success task_type: MapTask, work_id: 2,task_id: 3
+do MapTask work_id: 2, task_id: 3
+MapTask finish work_id: 1, task_id: 4
+ReportTask worker_id:1, task_id: 4, task_type: MapTask
+Running queue remove Finish task_id: 4, Worker_id: 1 
+report task success work_id :1, task_id: 4 
+master GetOneTask worker id :1 
+GetOneTask case1 
+GetTask success task_type: MapTask, work_id: 1,task_id: 2
+do MapTask work_id: 1, task_id: 2
+MapTask finish work_id: 2, task_id: 3
+ReportTask worker_id:2, task_id: 3, task_type: MapTask
+Running queue remove Finish task_id: 3, Worker_id: 2 
+report task success work_id :2, task_id: 3 
+master GetOneTask worker id :2 
+GetOneTask case1 
+GetTask success task_type: MapTask, work_id: 2,task_id: 1
+do MapTask work_id: 2, task_id: 1
+MapTask finish work_id: 1, task_id: 2
+ReportTask worker_id:1, task_id: 2, task_type: MapTask
+Running queue remove Finish task_id: 2, Worker_id: 1 
+report task success work_id :1, task_id: 2 
+master GetOneTask worker id :1 
+GetOneTask case1 
+GetTask success task_type: MapTask, work_id: 1,task_id: 0
+do MapTask work_id: 1, task_id: 0
+MapTask finish work_id: 2, task_id: 1
+ReportTask worker_id:2, task_id: 1, task_type: MapTask
+Running queue remove Finish task_id: 1, Worker_id: 2 
+report task success work_id :2, task_id: 1 
+MapTask finish work_id: 1, task_id: 0
+master GetOneTask worker id :2 
+GetOneTask case2 
+ReportTask worker_id:1, task_id: 0, task_type: MapTask
+Running queue remove Finish task_id: 0, Worker_id: 1 
+worker get task fail 100
+initReduceTask success 10
+There are no idle tasks here! task_type: , work_id: 2,task_id: 0
+report task success work_id :1, task_id: 0 
+master GetOneTask worker id :1 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 1,task_id: 9
+do ReduceTask work_id: 1, task_id: 9
+master status is 3 
+master status is 3 
+master GetOneTask worker id :2 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 2,task_id: 8
+do ReduceTask work_id: 2, task_id: 8
+ReportTask worker_id:2, task_id: 8, task_type: ReduceTask
+Running queue remove Finish task_id: 8, Worker_id: 2 
+report task success work_id :2, task_id: 8 
+master GetOneTask worker id :2 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 2,task_id: 7
+do ReduceTask work_id: 2, task_id: 7
+ReportTask worker_id:1, task_id: 9, task_type: ReduceTask
+Running queue remove Finish task_id: 9, Worker_id: 1 
+report task success work_id :1, task_id: 9 
+ReportTask worker_id:2, task_id: 7, task_type: ReduceTask
+Running queue remove Finish task_id: 7, Worker_id: 2 
+master GetOneTask worker id :1 
+GetOneTask case3 
+report task success work_id :2, task_id: 7 
+GetTask success task_type: ReduceTask, work_id: 1,task_id: 6
+do ReduceTask work_id: 1, task_id: 6
+master GetOneTask worker id :2 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 2,task_id: 5
+do ReduceTask work_id: 2, task_id: 5
+master status is 3 
+master status is 3 
+ReportTask worker_id:1, task_id: 6, task_type: ReduceTask
+Running queue remove Finish task_id: 6, Worker_id: 1 
+ReportTask worker_id:2, task_id: 5, task_type: ReduceTask
+Running queue remove Finish task_id: 5, Worker_id: 2 
+report task success work_id :1, task_id: 6 
+report task success work_id :2, task_id: 5 
+master GetOneTask worker id :1 
+GetOneTask case3 
+master GetOneTask worker id :2 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 1,task_id: 4
+do ReduceTask work_id: 1, task_id: 4
+GetTask success task_type: ReduceTask, work_id: 2,task_id: 3
+do ReduceTask work_id: 2, task_id: 3
+master status is 3 
+master status is 3 
+master status is 3 
+master status is 3 
+ReportTask worker_id:2, task_id: 3, task_type: ReduceTask
+Running queue remove Finish task_id: 3, Worker_id: 2 
+ReportTask worker_id:1, task_id: 4, task_type: ReduceTask
+Running queue remove Finish task_id: 4, Worker_id: 1 
+report task success work_id :2, task_id: 3 
+report task success work_id :1, task_id: 4 
+master GetOneTask worker id :2 
+GetOneTask case3 
+master GetOneTask worker id :1 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 2,task_id: 2
+do ReduceTask work_id: 2, task_id: 2
+GetTask success task_type: ReduceTask, work_id: 1,task_id: 1
+do ReduceTask work_id: 1, task_id: 1
+master status is 3 
+master status is 3 
+ReportTask worker_id:2, task_id: 2, task_type: ReduceTask
+Running queue remove Finish task_id: 2, Worker_id: 2 
+ReportTask worker_id:1, task_id: 1, task_type: ReduceTask
+Running queue remove Finish task_id: 1, Worker_id: 1 
+report task success work_id :2, task_id: 2 
+report task success work_id :1, task_id: 1 
+master GetOneTask worker id :2 
+GetOneTask case3 
+master GetOneTask worker id :1 
+GetOneTask case4 
+GetTask success task_type: ReduceTask, work_id: 2,task_id: 0
+do ReduceTask work_id: 2, task_id: 0
+worker get task fail 100
+There are no idle tasks here! task_type: , work_id: 1,task_id: 0
+master status is 4 
+master status is 4 
+master GetOneTask worker id :1 
+GetOneTask case4 
+worker get task fail 100
+There are no idle tasks here! task_type: , work_id: 1,task_id: 0
+ReportTask worker_id:2, task_id: 0, task_type: ReduceTask
+Running queue remove Finish task_id: 0, Worker_id: 2 
+report task success work_id :2, task_id: 0 
+master GetOneTask worker id :2 
+GetOneTask case5 
+worker get task fail 500
+--- reduce parallelism test: PASS
+master GetOneTask worker id :1 
+GetOneTask case5 
+worker get task fail 500
+*** Starting crash test.
+initMapTask success 8
+master status is 1 
+master status is 1 
+master status is 1 
+RegWorker: 1
+RegWorker: 2
+RegWorker: 3
+RegWorker: 4
+register success work_id: 4
+register success work_id: 1
+register success work_id: 2
+register success work_id: 3
+master GetOneTask worker id :4 
+GetOneTask case1 
+master GetOneTask worker id :3 
+GetOneTask case1 
+master GetOneTask worker id :1 
+GetOneTask case1 
+master GetOneTask worker id :2 
+GetOneTask case1 
+GetTask success task_type: MapTask, work_id: 1,task_id: 5
+GetTask success task_type: MapTask, work_id: 4,task_id: 7
+do MapTask work_id: 1, task_id: 5
+do MapTask work_id: 4, task_id: 7
+GetTask success task_type: MapTask, work_id: 3,task_id: 6
+do MapTask work_id: 3, task_id: 6
+GetTask success task_type: MapTask, work_id: 2,task_id: 4
+do MapTask work_id: 2, task_id: 4
+MapTask finish work_id: 4, task_id: 7
+ReportTask worker_id:4, task_id: 7, task_type: MapTask
+Running queue remove Finish task_id: 7, Worker_id: 4 
+report task success work_id :4, task_id: 7 
+MapTask finish work_id: 3, task_id: 6
+master GetOneTask worker id :4 
+GetOneTask case1 
+ReportTask worker_id:3, task_id: 6, task_type: MapTask
+GetTask success task_type: MapTask, work_id: 4,task_id: 3
+Running queue remove Finish task_id: 6, Worker_id: 3 
+do MapTask work_id: 4, task_id: 3
+report task success work_id :3, task_id: 6 
+master GetOneTask worker id :3 
+GetOneTask case1 
+GetTask success task_type: MapTask, work_id: 3,task_id: 2
+do MapTask work_id: 3, task_id: 2
+MapTask finish work_id: 4, task_id: 3
+MapTask finish work_id: 3, task_id: 2
+ReportTask worker_id:4, task_id: 3, task_type: MapTask
+Running queue remove Finish task_id: 3, Worker_id: 4 
+report task success work_id :4, task_id: 3 
+ReportTask worker_id:3, task_id: 2, task_type: MapTask
+Running queue remove Finish task_id: 2, Worker_id: 3 
+report task success work_id :3, task_id: 2 
+master GetOneTask worker id :4 
+GetOneTask case1 
+master GetOneTask worker id :3 
+GetOneTask case1 
+GetTask success task_type: MapTask, work_id: 4,task_id: 1
+do MapTask work_id: 4, task_id: 1
+GetTask success task_type: MapTask, work_id: 3,task_id: 0
+do MapTask work_id: 3, task_id: 0
+MapTask finish work_id: 4, task_id: 1
+ReportTask worker_id:4, task_id: 1, task_type: MapTask
+Running queue remove Finish task_id: 1, Worker_id: 4 
+report task success work_id :4, task_id: 1 
+master GetOneTask worker id :4 
+GetOneTask case2 
+worker get task fail 100
+There are no idle tasks here! task_type: , work_id: 4,task_id: 0
+master status is 2 
+master status is 2 
+RegWorker: 5
+register success work_id: 5
+master GetOneTask worker id :5 
+GetOneTask case2 
+worker get task fail 100
+There are no idle tasks here! task_type: , work_id: 5,task_id: 0
+master GetOneTask worker id :4 
+GetOneTask case2 
+worker get task fail 100
+There are no idle tasks here! task_type: , work_id: 4,task_id: 0
+master status is 2 
+master status is 2 
+master GetOneTask worker id :5 
+GetOneTask case2 
+worker get task fail 100
+There are no idle tasks here! task_type: , work_id: 5,task_id: 0
+master GetOneTask worker id :4 
+GetOneTask case2 
+worker get task fail 100
+There are no idle tasks here! task_type: , work_id: 4,task_id: 0
+master status is 2 
+master status is 2 
+master GetOneTask worker id :5 
+GetOneTask case2 
+worker get task fail 100
+There are no idle tasks here! task_type: , work_id: 5,task_id: 0
+master GetOneTask worker id :4 
+GetOneTask case2 
+worker get task fail 100
+There are no idle tasks here! task_type: , work_id: 4,task_id: 0
+master status is 2 
+MapTask finish work_id: 2, task_id: 4
+ReportTask worker_id:2, task_id: 4, task_type: MapTask
+Running queue remove Finish task_id: 4, Worker_id: 2 
+report task success work_id :2, task_id: 4 
+master GetOneTask worker id :2 
+GetOneTask case2 
+worker get task fail 100
+There are no idle tasks here! task_type: , work_id: 2,task_id: 0
+master status is 2 
+master GetOneTask worker id :5 
+GetOneTask case2 
+worker get task fail 100
+There are no idle tasks here! task_type: , work_id: 5,task_id: 0
+master GetOneTask worker id :4 
+GetOneTask case2 
+worker get task fail 100
+There are no idle tasks here! task_type: , work_id: 4,task_id: 0
+master status is 2 
+master GetOneTask worker id :2 
+GetOneTask case2 
+worker get task fail 100
+There are no idle tasks here! task_type: , work_id: 2,task_id: 0
+master status is 2 
+master GetOneTask worker id :5 
+GetOneTask case2 
+worker get task fail 100
+There are no idle tasks here! task_type: , work_id: 5,task_id: 0
+master GetOneTask worker id :4 
+GetOneTask case2 
+worker get task fail 100
+There are no idle tasks here! task_type: , work_id: 4,task_id: 0
+master status is 2 
+Get Back MapTask from Running queue Task_id: 5, Worker_id: 1 
+Get Back MapTask from Running queue Task_id: 0, Worker_id: 3 
+master GetOneTask worker id :2 
+GetOneTask case1 
+GetTask success task_type: MapTask, work_id: 2,task_id: 0
+do MapTask work_id: 2, task_id: 0
+master status is 1 
+master GetOneTask worker id :5 
+GetOneTask case1 
+GetTask success task_type: MapTask, work_id: 5,task_id: 5
+do MapTask work_id: 5, task_id: 5
+master GetOneTask worker id :4 
+GetOneTask case2 
+worker get task fail 100
+There are no idle tasks here! task_type: , work_id: 4,task_id: 0
+master status is 2 
+master status is 2 
+master GetOneTask worker id :4 
+GetOneTask case2 
+worker get task fail 100
+There are no idle tasks here! task_type: , work_id: 4,task_id: 0
+master status is 2 
+master status is 2 
+master GetOneTask worker id :4 
+GetOneTask case2 
+worker get task fail 100
+There are no idle tasks here! task_type: , work_id: 4,task_id: 0
+master status is 2 
+master status is 2 
+master GetOneTask worker id :4 
+GetOneTask case2 
+worker get task fail 100
+There are no idle tasks here! task_type: , work_id: 4,task_id: 0
+master status is 2 
+MapTask finish work_id: 3, task_id: 0
+ReportTask worker_id:3, task_id: 0, task_type: MapTask
+Running queue remove Finish task_id: 0, Worker_id: 2 
+report task success work_id :3, task_id: 0 
+master GetOneTask worker id :3 
+GetOneTask case2 
+worker get task fail 100
+There are no idle tasks here! task_type: , work_id: 3,task_id: 0
+master status is 2 
+master GetOneTask worker id :4 
+GetOneTask case2 
+worker get task fail 100
+There are no idle tasks here! task_type: , work_id: 4,task_id: 0
+master status is 2 
+master GetOneTask worker id :3 
+GetOneTask case2 
+worker get task fail 100
+There are no idle tasks here! task_type: , work_id: 3,task_id: 0
+master status is 2 
+master GetOneTask worker id :4 
+GetOneTask case2 
+worker get task fail 100
+There are no idle tasks here! task_type: , work_id: 4,task_id: 0
+master status is 2 
+Get Back MapTask from Running queue Task_id: 5, Worker_id: 5 
+MapTask finish work_id: 2, task_id: 0
+ReportTask worker_id:2, task_id: 0, task_type: MapTask
+Running queue remove Fail task_id: 0, Worker_id: 2 
+report task success work_id :2, task_id: 0 
+master GetOneTask worker id :2 
+GetOneTask case1 
+GetTask success task_type: MapTask, work_id: 2,task_id: 5
+do MapTask work_id: 2, task_id: 5
+MapTask finish work_id: 2, task_id: 5
+ReportTask worker_id:2, task_id: 5, task_type: MapTask
+Running queue remove Finish task_id: 5, Worker_id: 2 
+initReduceTask success 10
+report task success work_id :2, task_id: 5 
+master GetOneTask worker id :2 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 2,task_id: 9
+do ReduceTask work_id: 2, task_id: 9
+master GetOneTask worker id :3 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 3,task_id: 8
+do ReduceTask work_id: 3, task_id: 8
+ReportTask worker_id:3, task_id: 8, task_type: ReduceTask
+Running queue remove Finish task_id: 8, Worker_id: 3 
+report task success work_id :3, task_id: 8 
+master GetOneTask worker id :3 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 3,task_id: 7
+do ReduceTask work_id: 3, task_id: 7
+ReportTask worker_id:3, task_id: 7, task_type: ReduceTask
+Running queue remove Finish task_id: 7, Worker_id: 3 
+report task success work_id :3, task_id: 7 
+master status is 3 
+master GetOneTask worker id :3 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 3,task_id: 6
+do ReduceTask work_id: 3, task_id: 6
+ReportTask worker_id:3, task_id: 6, task_type: ReduceTask
+Running queue remove Finish task_id: 6, Worker_id: 3 
+report task success work_id :3, task_id: 6 
+master GetOneTask worker id :3 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 3,task_id: 5
+do ReduceTask work_id: 3, task_id: 5
+ReportTask worker_id:3, task_id: 5, task_type: ReduceTask
+Running queue remove Finish task_id: 5, Worker_id: 3 
+report task success work_id :3, task_id: 5 
+master GetOneTask worker id :3 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 3,task_id: 4
+do ReduceTask work_id: 3, task_id: 4
+ReportTask worker_id:3, task_id: 4, task_type: ReduceTask
+Running queue remove Finish task_id: 4, Worker_id: 3 
+report task success work_id :3, task_id: 4 
+master GetOneTask worker id :3 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 3,task_id: 3
+do ReduceTask work_id: 3, task_id: 3
+ReportTask worker_id:3, task_id: 3, task_type: ReduceTask
+Running queue remove Finish task_id: 3, Worker_id: 3 
+report task success work_id :3, task_id: 3 
+master GetOneTask worker id :3 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 3,task_id: 2
+do ReduceTask work_id: 3, task_id: 2
+MapTask finish work_id: 5, task_id: 5
+ReportTask worker_id:5, task_id: 5, task_type: MapTask
+Running queue remove Fail task_id: 5, Worker_id: 5 
+initReduceTask success 12
+report task success work_id :5, task_id: 5 
+master GetOneTask worker id :5 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 5,task_id: 9
+do ReduceTask work_id: 5, task_id: 9
+ReportTask worker_id:5, task_id: 9, task_type: ReduceTask
+Running queue remove Finish task_id: 9, Worker_id: 2 
+report task success work_id :5, task_id: 9 
+master GetOneTask worker id :5 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 5,task_id: 8
+do ReduceTask work_id: 5, task_id: 8
+ReportTask worker_id:5, task_id: 8, task_type: ReduceTask
+Running queue remove Finish task_id: 8, Worker_id: 5 
+report task success work_id :5, task_id: 8 
+master GetOneTask worker id :5 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 5,task_id: 7
+do ReduceTask work_id: 5, task_id: 7
+ReportTask worker_id:5, task_id: 7, task_type: ReduceTask
+Running queue remove Finish task_id: 7, Worker_id: 5 
+report task success work_id :5, task_id: 7 
+master GetOneTask worker id :5 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 5,task_id: 6
+do ReduceTask work_id: 5, task_id: 6
+ReportTask worker_id:5, task_id: 6, task_type: ReduceTask
+Running queue remove Finish task_id: 6, Worker_id: 5 
+report task success work_id :5, task_id: 6 
+master GetOneTask worker id :5 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 5,task_id: 5
+do ReduceTask work_id: 5, task_id: 5
+ReportTask worker_id:5, task_id: 5, task_type: ReduceTask
+Running queue remove Finish task_id: 5, Worker_id: 5 
+report task success work_id :5, task_id: 5 
+master GetOneTask worker id :5 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 5,task_id: 4
+do ReduceTask work_id: 5, task_id: 4
+ReportTask worker_id:5, task_id: 4, task_type: ReduceTask
+Running queue remove Finish task_id: 4, Worker_id: 5 
+report task success work_id :5, task_id: 4 
+master GetOneTask worker id :5 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 5,task_id: 3
+do ReduceTask work_id: 5, task_id: 3
+ReportTask worker_id:5, task_id: 3, task_type: ReduceTask
+Running queue remove Finish task_id: 3, Worker_id: 5 
+report task success work_id :5, task_id: 3 
+master GetOneTask worker id :5 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 5,task_id: 2
+do ReduceTask work_id: 5, task_id: 2
+master GetOneTask worker id :4 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 4,task_id: 1
+do ReduceTask work_id: 4, task_id: 1
+ReportTask worker_id:4, task_id: 1, task_type: ReduceTask
+Running queue remove Finish task_id: 1, Worker_id: 4 
+report task success work_id :4, task_id: 1 
+master GetOneTask worker id :4 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 4,task_id: 0
+do ReduceTask work_id: 4, task_id: 0
+ReportTask worker_id:4, task_id: 0, task_type: ReduceTask
+Running queue remove Finish task_id: 0, Worker_id: 4 
+report task success work_id :4, task_id: 0 
+master GetOneTask worker id :4 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 4,task_id: 1
+do ReduceTask work_id: 4, task_id: 1
+ReportTask worker_id:4, task_id: 1, task_type: ReduceTask
+Running queue remove Finish task_id: 1, Worker_id: 4 
+report task success work_id :4, task_id: 1 
+master GetOneTask worker id :4 
+GetOneTask case3 
+GetTask success task_type: ReduceTask, work_id: 4,task_id: 0
+do ReduceTask work_id: 4, task_id: 0
+master status is 4 
+RegWorker: 6
+register success work_id: 6
+master GetOneTask worker id :6 
+GetOneTask case4 
+worker get task fail 100
+There are no idle tasks here! task_type: , work_id: 6,task_id: 0
+master status is 4 
+master status is 4 
+master GetOneTask worker id :6 
+GetOneTask case4 
+worker get task fail 100
+There are no idle tasks here! task_type: , work_id: 6,task_id: 0
+master status is 4 
+master status is 4 
+ReportTask worker_id:5, task_id: 2, task_type: ReduceTask
+Running queue remove Finish task_id: 2, Worker_id: 3 
+report task success work_id :5, task_id: 2 
+master GetOneTask worker id :5 
+GetOneTask case5 
+worker get task fail 500
+master GetOneTask worker id :6 
+GetOneTask case5 
+worker get task fail 500
+RegWorker: 7
+register success work_id: 7
+master GetOneTask worker id :7 
+GetOneTask case5 
+worker get task fail 500
+RegWorker: 8
+register success work_id: 8
+master GetOneTask worker id :8 
+GetOneTask case5 
+worker get task fail 500
+--- crash test: PASS
+*** PASSED ALL TESTS
