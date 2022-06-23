@@ -56,7 +56,7 @@ func (w *worker) run() {
 			t := w.GetTask()
 			if  !t.IsExist{
 				fmt.Printf("There are no idle tasks here! task_type: %s, work_id: %v,task_id: %v\n",t.Task_type,w.id,t.Task_id)
-				time.Sleep(time.Millisecond*1000)
+				time.Sleep(time.Millisecond*500)
 				continue
 			}
 			switch  t.Task_type {

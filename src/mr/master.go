@@ -286,6 +286,9 @@ func (m *Master) server() {
 
 // 任务心跳检测
 func (m *Master) checkTask(){
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	fmt.Printf("go checkTask() \n")
 	tmp_queue := make([]Task,0)
 	for _,task:= range m.TaskRunning_queue{
 		if time.Now().Sub(task.BeginTime) >MaxTaskRunTime{
@@ -312,6 +315,7 @@ func (m *Master) tickSchedule() {
 	// 按说应该是每个 task 一个 timer，此处简单处理
 	for !m.Done() {
 		fmt.Printf("master status is %v \n",m.status)
+		// Goroutine 协程
 		go m.checkTask()
 		time.Sleep(ScheduleInterval)
 	}
@@ -324,8 +328,7 @@ func (m *Master) tickSchedule() {
 //
 func (m *Master) Done() bool {
 	
-	m.mu.Lock()
-	defer m.mu.Unlock()
+	
 	// Your code here.
 	return m.status == -1 || m.status == 5
 }
