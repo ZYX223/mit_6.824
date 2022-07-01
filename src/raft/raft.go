@@ -76,7 +76,6 @@ type Raft struct {
 	term	  int
 	isleader  bool
 	state     int				  // rf 状态值 follower/candidate/leader
-	
 	voteNums  int                 // 选票数量
 	voteFor   int                 // 
 	// Timer 相关
