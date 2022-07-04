@@ -5,18 +5,22 @@ import "fmt"
 
 // AppendReply 状态值
 const (
-	Success = 1
-	
+	HeartBeat_Success = 1
+	LogRep_Success = 2
+	LogRep_Fail = 4
 )
 //
 // example RequestVote RPC arguments structure.
 // field names must start with capital letters!
 //
 type AppendEntriesArgs struct{
+	HasLog bool
 	Term  int
 	LeaderId  int
 	PreLogIndex	int
 	PreLogTerm int
+	LogEntires   []LogEntry
+	LeaderCommit int
 }
 //
 // example RequestVote RPC reply structure.
@@ -31,6 +35,11 @@ type AppendEntriesReply struct{
 //
 // example RequestVote RPC handler.
 //
+
+// Success Follower 成功match PreLogIndex,PreLogTerm
+// TermLower Term < rf.term
+
+
 func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply){
 	rf.mu.Lock()
 	defer rf.mu.Unlock()
@@ -42,7 +51,26 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 		return
 	}
 	rf.resetElectionTimer()
-	reply.AppendEntriesState = Success
+	// 日志包
+	if args.HasLog{
+		// preIndex 未匹配到  Fail
+		preIndex := args.PreLogIndex
+		preTerm :=  args.PreLogTerm
+		if preIndex >= len(rf.logEntires) || rf.logEntires[preIndex].Term !=preTerm{
+			reply.AppendEntriesState = LogRep_Fail
+			return
+		}
+		reply.AppendEntriesState = LogRep_Success
+		// 成功匹配到 进行log复制
+		rf.LogReplicate(preIndex,&args.LogEntires)
+		// 更新 commitIndex
+		if args.LeaderCommit >rf.commitIndex{
+			rf.commitIndex = min(args.LeaderCommit,len(rf.logEntires)-1)
+		}
+		return
+	}
+	// 心跳包
+	reply.AppendEntriesState = HeartBeat_Success
 	if rf.state == Candidate{
 		rf.state = Follower
 		fmt.Printf("%v has recv AppendEntries from %v  Candidate=>Follower \n",rf.me,args.LeaderId)
@@ -89,11 +117,13 @@ func (rf *Raft) sendAppendEntries(server int, args *AppendEntriesArgs, reply *Ap
 	ok := rf.peers[server].Call("Raft.AppendEntries", args, reply)
 	return ok
 }
-
-func (rf *Raft) appendEntiresSend(){
+// 函数入口
+func (rf *Raft) appendEntiresSend(hasLog bool){
 	rf.resetElectionTimer()
 	rf.state = Leader
+	
 	args:= AppendEntriesArgs{
+		HasLog: false,
 		Term : rf.term,
 		LeaderId: rf.me,
 	}
@@ -101,7 +131,21 @@ func (rf *Raft) appendEntiresSend(){
 		if server == rf.me{
 			continue
 		}
-		go rf.leaderSendAppend(server,&args)
+		// 心跳包
+		if !hasLog{
+			go rf.leaderSendAppend(server,&args)
+			continue
+		}
+		// 日志包
+		if hasLog && len(rf.logEntires)-1 >= rf.nextIndex[server]{
+			args.HasLog = true
+			prelastIndex :=rf.nextIndex[server]-1
+			args.PreLogIndex = prelastIndex
+			args.PreLogTerm = rf.logEntires[args.PreLogIndex].Term
+			args.LogEntires = rf.getNextEntires(args.PreLogIndex+1)
+			args.LeaderCommit = rf.commitIndex
+			go rf.leaderSendAppend(server,&args)
+		}		
 	} 
 }
 func (rf *Raft) leaderSendAppend(server int, args *AppendEntriesArgs){
@@ -113,7 +157,19 @@ func (rf *Raft) leaderSendAppend(server int, args *AppendEntriesArgs){
 	case TermLower:
 		fmt.Printf("Leader %v AppendEntries TermLower \n",rf.me)
 		rf.setNewTerm(reply.Term)
-	case Success:
-		fmt.Printf("Leader %v AppendEntries Success to %v \n",rf.me,server)
+	case HeartBeat_Success:
+		fmt.Printf("Leader %v AppendEntries HeartBeat_Success to %v \n",rf.me,server)
+	case LogRep_Success:
+		fmt.Printf("Leader %v AppendEntries LogRep_Success to %v \n",rf.me,server)
+		// 更新 nextIndex matchIndex
+		match:= args.PreLogIndex + len(args.LogEntires)
+		next:= match+1
+		rf.matchIndex[server] = match
+		rf.nextIndex[server] = next
+		// 收到majority 回复, commit log
+
+	case LogRep_Fail:
+		fmt.Printf("Leader %v AppendEntries LogRep_Fail to %v \n",rf.me,server)
+		// retry
 	}
 }

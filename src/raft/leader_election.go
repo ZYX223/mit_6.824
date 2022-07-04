@@ -55,11 +55,11 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 		return
 	} 
 	// 日志完整性过低拒绝投票
-	if args.LastLogIndex <rf.lastLogIndex || args.LastLogTerm < rf.lastLogTerm{
-		reply.Term = rf.term
-		reply.VoteState = LogLower
-		return
-	}
+	// if args.LastLogIndex <rf.lastLogIndex || args.LastLogTerm < rf.lastLogTerm{
+	// 	reply.Term = rf.term
+	// 	reply.VoteState = LogLower
+	// 	return
+	// }
 	// 已投票
 	if rf.voteFor != -1 && rf.voteFor != rf.me{
 		reply.Term = rf.term

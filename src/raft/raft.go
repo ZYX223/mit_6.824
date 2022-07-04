@@ -17,7 +17,6 @@ package raft
 //   in the same server.
 //
 
-
 import "sync/atomic"
 import "../labrpc"
 import "time"
@@ -33,7 +32,6 @@ const (
 	Candidate = 2
 	Leader = 3
 ) 
-
 
 //
 // as each Raft peer becomes aware that successive log entries are
@@ -63,18 +61,23 @@ type Raft struct {
 	dead      int32               // set by Kill()
 	peers_num int
 	// vote 相关
-	term	  int
+	term	  int				  // currentTerm
 	isleader  bool
 	state     int				  // rf 状态值 follower/candidate/leader
 	voteNums  int                 // 选票数量
-	voteFor   int                 // 
+	voteFor   int                 // 投票给谁
 	// Timer 相关
 	electionTime time.Time	  	  // 超时选举时间
 	heartBeat	 time.Duration	  // Leader 心跳间隔
-	voteTime time.Time
+	voteTime time.Time			  // Vote 到期时间戳
 	// log 相关
-	lastLogIndex int
-	lastLogTerm int
+	logEntires   []LogEntry		  // 本地log列表
+	// Volatile state on all servers
+	commitIndex int				  // 最近被提交的日志索引
+	lastApplied int				  // 最近被应用到状态机的日志索引
+	// Volatile state on leaders
+	nextIndex []int				  // 对于每个server,leader 将要发送的log index
+	matchIndex []int			  // 对于每个server, match到的最近log index
 
 	// Your data here (2A, 2B, 2C).
 	// Look at the paper's Figure 2 for a description of what
@@ -149,10 +152,21 @@ func (rf *Raft) readPersist(data []byte) {
 //
 func (rf *Raft) Start(command interface{}) (int, int, bool) {
 	index := -1
-	term := -1
-	isLeader := true
+	term := rf.term
+	isLeader := rf.state == Leader
+	if !isLeader{
+		return index, term, false
+	}
 	// Your code here (2B).
-
+	index = len(rf.logEntires) +1
+	log:=LogEntry{
+		Term :term,
+		Command :command,
+	}
+	rf.logEntires = append(rf.logEntires,log)
+	// leader 发送日志包
+	rf.appendEntiresSend(true)
+	fmt.Printf("%v start append log \n",rf.me)
 	return index, term, isLeader
 }
 
@@ -188,9 +202,6 @@ func (rf *Raft) killed() bool {
 // Make() must return quickly, so it should start goroutines
 // for any long-running work.
 //
-
-
-
 func (rf *Raft) Ticker(){
 	for !rf.killed(){
 		switch rf.state{
@@ -205,12 +216,12 @@ func (rf *Raft) Ticker(){
 				rf.leaderElection()
 			}
 		case Leader:
-			rf.appendEntiresSend()
+			// 不含Log 的心跳包
+			rf.appendEntiresSend(false)
 			time.Sleep(rf.heartBeat)
 		}
 	}
 }
-
 
 func Make(peers []*labrpc.ClientEnd, me int,
 	persister *Persister, applyCh chan ApplyMsg) *Raft {
