@@ -71,14 +71,16 @@ type Raft struct {
 	heartBeat	 time.Duration	  // Leader 心跳间隔
 	voteTime time.Time			  // Vote 到期时间戳
 	// log 相关
-	logEntires   []LogEntry		  // 本地log列表
+	logEntires   []LogEntry		  // 本地log列表,首个索引为1
 	// Volatile state on all servers
 	commitIndex int				  // 最近被提交的日志索引
 	lastApplied int				  // 最近被应用到状态机的日志索引
 	// Volatile state on leaders
 	nextIndex []int				  // 对于每个server,leader 将要发送的log index
 	matchIndex []int			  // 对于每个server, match到的最近log index
-
+	// applyCh
+	applyCh	  chan ApplyMsg
+	applyCond *sync.Cond
 	// Your data here (2A, 2B, 2C).
 	// Look at the paper's Figure 2 for a description of what
 	// state a Raft server must maintain.
@@ -161,12 +163,13 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 	index = len(rf.logEntires) +1
 	log:=LogEntry{
 		Term :term,
+		Index: index,
 		Command :command,
 	}
 	rf.logEntires = append(rf.logEntires,log)
 	// leader 发送日志包
-	rf.appendEntiresSend(true)
 	fmt.Printf("%v start append log \n",rf.me)
+	rf.appendEntiresSend(true)
 	return index, term, isLeader
 }
 
@@ -236,12 +239,46 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	rf.heartBeat = 50 *time.Millisecond
 	rf.voteFor = -1
 	rf.state = Follower
+	// log相关初始化
+	rf.commitIndex = 0
+	rf.lastApplied = 0
+	rf.nextIndex = make([]int,len(rf.peers))	
+	rf.matchIndex = make([]int,len(rf.peers))
+	// applyCh
+	rf.applyCh = applyCh
+	rf.applyCond = sync.NewCond(&rf.mu)
 	// 设置 Election_TimeOut
 	rf.resetElectionTimer()
 	// initialize from state persisted before a crash
 	rf.readPersist(persister.ReadRaftState())
 
 	go rf.Ticker()
-
+	go rf.Applier()
 	return rf
+}
+func (rf *Raft) apply() {
+	rf.applyCond.Broadcast()
+	fmt.Printf("[%v]: rf.applyCond.Broadcast()", rf.me)
+}
+
+func (rf *Raft) Applier(){
+	rf.mu.Lock()
+	defer rf.mu.Unlock()
+
+	for !rf.killed(){
+		if rf.commitIndex >rf.lastApplied{
+			rf.lastApplied++
+			applyMsg := ApplyMsg{
+				CommandValid:  true,
+				Command:       rf.getLog(rf.lastApplied).Command,
+				CommandIndex:  rf.lastApplied,
+			}
+			rf.mu.Unlock()
+			rf.applyCh <- applyMsg
+			rf.mu.Lock()
+		}else{
+			rf.applyCond.Wait()
+			DPrintf("[%v]: rf.applyCond.Wait()", rf.me)
+		}
+	}
 }

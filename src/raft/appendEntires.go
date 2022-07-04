@@ -55,8 +55,8 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 	if args.HasLog{
 		// preIndex 未匹配到  Fail
 		preIndex := args.PreLogIndex
-		preTerm :=  args.PreLogTerm
-		if preIndex >= len(rf.logEntires) || rf.logEntires[preIndex].Term !=preTerm{
+		preTerm :=  args.PreLogTerm			
+		if preIndex > rf.getLastLog().Index || rf.getLog(preIndex).Term !=preTerm{
 			reply.AppendEntriesState = LogRep_Fail
 			return
 		}
@@ -65,7 +65,7 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 		rf.LogReplicate(preIndex,&args.LogEntires)
 		// 更新 commitIndex
 		if args.LeaderCommit >rf.commitIndex{
-			rf.commitIndex = min(args.LeaderCommit,len(rf.logEntires)-1)
+			rf.commitIndex = min(args.LeaderCommit,rf.getLastLog().Index)
 		}
 		return
 	}
@@ -131,22 +131,26 @@ func (rf *Raft) appendEntiresSend(hasLog bool){
 		if server == rf.me{
 			continue
 		}
+		// 初始化 next
+		if rf.nextIndex[server] == 0{
+			rf.nextIndex[server]=1
+		}
 		// 心跳包
 		if !hasLog{
 			go rf.leaderSendAppend(server,&args)
 			continue
 		}
 		// 日志包
-		if hasLog && len(rf.logEntires)-1 >= rf.nextIndex[server]{
+		if hasLog && rf.getLastLog().Index >= rf.nextIndex[server]{
 			args.HasLog = true
 			prelastIndex :=rf.nextIndex[server]-1
 			args.PreLogIndex = prelastIndex
-			args.PreLogTerm = rf.logEntires[args.PreLogIndex].Term
+			args.PreLogTerm = rf.getLog(args.PreLogIndex).Term 
 			args.LogEntires = rf.getNextEntires(args.PreLogIndex+1)
 			args.LeaderCommit = rf.commitIndex
 			go rf.leaderSendAppend(server,&args)
-		}		
-	} 
+		}
+	}
 }
 func (rf *Raft) leaderSendAppend(server int, args *AppendEntriesArgs){
 	reply:= AppendEntriesReply{}
@@ -166,10 +170,33 @@ func (rf *Raft) leaderSendAppend(server int, args *AppendEntriesArgs){
 		next:= match+1
 		rf.matchIndex[server] = match
 		rf.nextIndex[server] = next
-		// 收到majority 回复, commit log
-
 	case LogRep_Fail:
 		fmt.Printf("Leader %v AppendEntries LogRep_Fail to %v \n",rf.me,server)
-		// retry
+		// 减小 nextIndex值 待优化
+		rf.nextIndex[server]-=1
+	}
+	if args.HasLog{
+		rf.leaderCommit()
+	}
+}
+
+func (rf *Raft) leaderCommit(){
+	for logIndex:= rf.commitIndex+1;logIndex <= rf.getLastLog().Index;logIndex++{
+		if rf.getLog(logIndex).Term != rf.term{
+			continue
+		}
+		count:=0
+		for server:=0;server<len(rf.peers);server++{
+			if rf.matchIndex[server] >=logIndex{
+				count++
+			}
+			if count > len(rf.peers)/2{
+				rf.commitIndex = logIndex
+				// Apply
+				fmt.Printf("laeder %v apply log %v to client \n",rf.me,logIndex)
+				rf.apply()
+				break
+			}
+		}
 	}
 }
