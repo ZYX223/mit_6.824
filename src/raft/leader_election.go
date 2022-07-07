@@ -33,8 +33,6 @@ type RequestVoteReply struct {
 	VoteState int // 投票状态
 }
 
-
-
 //
 // example RequestVote RPC handler.
 //
@@ -55,11 +53,10 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 		return
 	} 
 	// 日志完整性过低拒绝投票
-	// if args.LastLogIndex <rf.lastLogIndex || args.LastLogTerm < rf.lastLogTerm{
-	// 	reply.Term = rf.term
-	// 	reply.VoteState = LogLower
-	// 	return
-	// }
+	if args.LastLogTerm < rf.getLastLog().Term || (args.LastLogTerm == rf.getLastLog().Term && args.LastLogIndex <rf.getLastLog().Index){
+		reply.VoteState = LogLower
+		return
+	}
 	// 已投票
 	if rf.voteFor != -1 && rf.voteFor != rf.me{
 		reply.Term = rf.term
@@ -121,6 +118,8 @@ func (rf *Raft) leaderElection(){
 	args:= RequestVoteArgs{
 		Term : rf.term,
 		CandidateId: rf.me,
+		LastLogIndex: rf.getLastLog().Index,
+		LastLogTerm: rf.getLastLog().Term,
 	}
 	for server:=0;server<len(rf.peers);server++{
 		if server == rf.me{
@@ -151,9 +150,14 @@ func (rf *Raft) candidateSendVote(server int, args *RequestVoteArgs){
 		fmt.Printf("Server %v VoteSuccess to %v\n",server,rf.me)
 		rf.voteNums +=1
 		// BecomeLeader
-		if rf.voteNums > rf.peers_num/2 && rf.state == Candidate{
+		if rf.voteNums > rf.peers_num/2 && rf.state == Candidate && rf.term == args.Term{
 			fmt.Printf("Server %v has been Leader \n",rf.me)
 			rf.state = Leader
+			// lastLogIndex := rf.getLastLog().Index
+			// for i, _ := range rf.peers {
+			// 	rf.nextIndex[i] = lastLogIndex + 1
+			// 	rf.matchIndex[i] = 0
+			// }
 		}
 		return
 	}

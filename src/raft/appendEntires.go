@@ -5,8 +5,7 @@ import "fmt"
 
 // AppendReply 状态值
 const (
-	HeartBeat_Success = 1
-	LogRep_Success = 2
+	Success = 2
 	LogRep_Fail = 4
 )
 //
@@ -14,13 +13,13 @@ const (
 // field names must start with capital letters!
 //
 type AppendEntriesArgs struct{
-	HasLog bool
 	Term  int
 	LeaderId  int
 	PreLogIndex	int
 	PreLogTerm int
 	LogEntires   []LogEntry
 	LeaderCommit int
+	Server int
 }
 //
 // example RequestVote RPC reply structure.
@@ -43,37 +42,41 @@ type AppendEntriesReply struct{
 func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply){
 	rf.mu.Lock()
 	defer rf.mu.Unlock()
-	fmt.Printf("%v has recv AppendEntries from %v \n",rf.me,args.LeaderId)
+	
+	//fmt.Printf("%v has recv AppendEntries from %v \n",rf.me,args.LeaderId)
+	reply.Term = rf.term
 	// Leader 任期低
 	if args.Term < rf.term{
-		fmt.Printf("%v has recv AppendEntries from %v, and TermLower Follower term is %v, Leader term is %v! \n",rf.me,args.LeaderId,rf.term,args.Term)
+		//fmt.Printf("%v has recv AppendEntries from %v, and TermLower Follower term is %v, Leader term is %v! \n",rf.me,args.LeaderId,rf.term,args.Term)
 		reply.AppendEntriesState = TermLower
 		return
 	}
 	rf.resetElectionTimer()
-	// 日志包
-	if args.HasLog{
-		// preIndex 未匹配到  Fail
-		preIndex := args.PreLogIndex
-		preTerm :=  args.PreLogTerm			
-		if preIndex > rf.getLastLog().Index || rf.getLog(preIndex).Term !=preTerm{
-			reply.AppendEntriesState = LogRep_Fail
-			return
-		}
-		reply.AppendEntriesState = LogRep_Success
-		// 成功匹配到 进行log复制
-		rf.LogReplicate(preIndex,&args.LogEntires)
-		// 更新 commitIndex
-		if args.LeaderCommit >rf.commitIndex{
-			rf.commitIndex = min(args.LeaderCommit,rf.getLastLog().Index)
-		}
+	// 更新 commitIndex
+	if args.LeaderCommit >rf.commitIndex{
+		rf.commitIndex = min(args.LeaderCommit,rf.getLastLog().Index)
+		rf.apply()
+		//fmt.Printf("[%v] try to apply log %v to client \n",rf.me,rf.commitIndex)
+	}
+	
+	// preIndex 未匹配到  Fail
+	preIndex := args.PreLogIndex
+	preTerm :=  args.PreLogTerm			
+	if preIndex > rf.getLastLog().Index || rf.getLog(preIndex).Term !=preTerm{
+		reply.AppendEntriesState = LogRep_Fail
+		fmt.Printf("[%v] LogRep_Fail serverid: [%v] preIndex: %v, rf.getLastLog().Index: %v, preTerm: %v \n",rf.me,args.Server,preIndex,
+		rf.getLastLog().Index,preTerm)
 		return
 	}
-	// 心跳包
-	reply.AppendEntriesState = HeartBeat_Success
+	
+	reply.AppendEntriesState = Success
+	// 成功匹配到 进行log复制
+	rf.LogReplicate(preIndex,&args.LogEntires)
+	//fmt.Printf("new LogEntires index is %v, term is %v \n",rf.logEntires[0].Index,rf.logEntires[0].Term)
+	
 	if rf.state == Candidate{
 		rf.state = Follower
-		fmt.Printf("%v has recv AppendEntries from %v  Candidate=>Follower \n",rf.me,args.LeaderId)
+		//fmt.Printf("%v has recv AppendEntries from %v  Candidate=>Follower \n",rf.me,args.LeaderId)
 	}
 	// 可重新投票
 	rf.voteFor = -1
@@ -118,36 +121,30 @@ func (rf *Raft) sendAppendEntries(server int, args *AppendEntriesArgs, reply *Ap
 	return ok
 }
 // 函数入口
-func (rf *Raft) appendEntiresSend(hasLog bool){
+func (rf *Raft) appendEntiresSend(heartBeat bool){
+	
 	rf.resetElectionTimer()
 	rf.state = Leader
 	
-	args:= AppendEntriesArgs{
-		HasLog: false,
-		Term : rf.term,
-		LeaderId: rf.me,
-	}
 	for server:=0;server<len(rf.peers);server++{
 		if server == rf.me{
 			continue
 		}
+		args:= AppendEntriesArgs{
+			Term : rf.term,
+			LeaderId: rf.me,
+			LeaderCommit: rf.commitIndex,
+			Server: server,
+		}
 		// 初始化 next
-		if rf.nextIndex[server] == 0{
-			rf.nextIndex[server]=1
+		if rf.nextIndex[server] <= 0{
+			rf.nextIndex[server] = 1
 		}
-		// 心跳包
-		if !hasLog{
-			go rf.leaderSendAppend(server,&args)
-			continue
-		}
-		// 日志包
-		if hasLog && rf.getLastLog().Index >= rf.nextIndex[server]{
-			args.HasLog = true
-			prelastIndex :=rf.nextIndex[server]-1
-			args.PreLogIndex = prelastIndex
-			args.PreLogTerm = rf.getLog(args.PreLogIndex).Term 
-			args.LogEntires = rf.getNextEntires(args.PreLogIndex+1)
-			args.LeaderCommit = rf.commitIndex
+		if rf.getLastLog().Index >= rf.nextIndex[server] || heartBeat{
+			preLog:= rf.getLog(rf.nextIndex[server]-1)
+			args.PreLogIndex = preLog.Index
+			args.PreLogTerm = preLog.Term
+			args.LogEntires = rf.getNextEntires(preLog.Index+1)
 			go rf.leaderSendAppend(server,&args)
 		}
 	}
@@ -157,27 +154,29 @@ func (rf *Raft) leaderSendAppend(server int, args *AppendEntriesArgs){
 	if ok := rf.sendAppendEntries(server,args,&reply); !ok {
 		return
 	}
+	rf.mu.Lock()
+	defer rf.mu.Unlock()
+
 	switch reply.AppendEntriesState{
 	case TermLower:
 		fmt.Printf("Leader %v AppendEntries TermLower \n",rf.me)
 		rf.setNewTerm(reply.Term)
-	case HeartBeat_Success:
-		fmt.Printf("Leader %v AppendEntries HeartBeat_Success to %v \n",rf.me,server)
-	case LogRep_Success:
-		fmt.Printf("Leader %v AppendEntries LogRep_Success to %v \n",rf.me,server)
+	case Success:
+		fmt.Printf("Leader %v AppendEntries LogRep_Success to %v\n",rf.me,server)
 		// 更新 nextIndex matchIndex
 		match:= args.PreLogIndex + len(args.LogEntires)
 		next:= match+1
 		rf.matchIndex[server] = match
 		rf.nextIndex[server] = next
 	case LogRep_Fail:
-		fmt.Printf("Leader %v AppendEntries LogRep_Fail to %v \n",rf.me,server)
+		fmt.Printf("Leader %v AppendEntries LogRep_Fail to %v, nextIndex: %v\n",rf.me,server,rf.nextIndex[server])
 		// 减小 nextIndex值 待优化
-		rf.nextIndex[server]-=1
+		if rf.nextIndex[server] >1{
+			rf.nextIndex[server]--
+		}
 	}
-	if args.HasLog{
-		rf.leaderCommit()
-	}
+	rf.leaderCommit()
+	
 }
 
 func (rf *Raft) leaderCommit(){
@@ -185,15 +184,18 @@ func (rf *Raft) leaderCommit(){
 		if rf.getLog(logIndex).Term != rf.term{
 			continue
 		}
-		count:=0
+		count:=1
 		for server:=0;server<len(rf.peers);server++{
+			if server == rf.me{
+				continue
+			}
 			if rf.matchIndex[server] >=logIndex{
 				count++
 			}
 			if count > len(rf.peers)/2{
 				rf.commitIndex = logIndex
 				// Apply
-				fmt.Printf("laeder %v apply log %v to client \n",rf.me,logIndex)
+				fmt.Printf("leader %v try to apply logIndex %v to client \n",rf.me,logIndex)
 				rf.apply()
 				break
 			}

@@ -13,7 +13,7 @@ func (rf *Raft) resetElectionTimer() {
 }
 func (rf *Raft) resetVoteTimer() {
 	t := time.Now()
-	VoteTimeout := time.Duration(50+ rand.Intn(150)) * time.Millisecond
+	VoteTimeout := time.Duration(200+ rand.Intn(150)) * time.Millisecond
 	rf.voteTime = t.Add(VoteTimeout)
 }
 

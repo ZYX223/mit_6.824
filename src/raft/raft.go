@@ -153,6 +153,9 @@ func (rf *Raft) readPersist(data []byte) {
 // the leader.
 //
 func (rf *Raft) Start(command interface{}) (int, int, bool) {
+	rf.mu.Lock()
+	defer rf.mu.Unlock()
+
 	index := -1
 	term := rf.term
 	isLeader := rf.state == Leader
@@ -168,8 +171,8 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 	}
 	rf.logEntires = append(rf.logEntires,log)
 	// leader 发送日志包
-	fmt.Printf("%v start append log \n",rf.me)
-	rf.appendEntiresSend(true)
+	fmt.Printf("[%v] start append log %v\n",rf.me,index)
+	rf.appendEntiresSend(false)
 	return index, term, isLeader
 }
 
@@ -220,7 +223,7 @@ func (rf *Raft) Ticker(){
 			}
 		case Leader:
 			// 不含Log 的心跳包
-			rf.appendEntiresSend(false)
+			rf.appendEntiresSend(true)
 			time.Sleep(rf.heartBeat)
 		}
 	}
@@ -258,7 +261,7 @@ func Make(peers []*labrpc.ClientEnd, me int,
 }
 func (rf *Raft) apply() {
 	rf.applyCond.Broadcast()
-	fmt.Printf("[%v]: rf.applyCond.Broadcast()", rf.me)
+	//fmt.Printf("[%v]: rf.applyCond.Broadcast() \n", rf.me)
 }
 
 func (rf *Raft) Applier(){
@@ -266,7 +269,7 @@ func (rf *Raft) Applier(){
 	defer rf.mu.Unlock()
 
 	for !rf.killed(){
-		if rf.commitIndex >rf.lastApplied{
+		if rf.commitIndex >rf.lastApplied && rf.getLastLog().Index > rf.lastApplied{
 			rf.lastApplied++
 			applyMsg := ApplyMsg{
 				CommandValid:  true,
@@ -278,7 +281,6 @@ func (rf *Raft) Applier(){
 			rf.mu.Lock()
 		}else{
 			rf.applyCond.Wait()
-			DPrintf("[%v]: rf.applyCond.Wait()", rf.me)
 		}
 	}
 }

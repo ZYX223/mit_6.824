@@ -23,11 +23,17 @@ func (rf *Raft) LogReplicate(PreIndex int, LogEntires *[]LogEntry){
 }
 
 func (rf *Raft) getLastLog() LogEntry{
-	
-	return rf.logEntires[len(rf.logEntires)-1]
+	return rf.getLog(len(rf.logEntires))
 }
 
 func (rf *Raft) getLog(logindex int) LogEntry{
 	index:= logindex-1
+	if index < 0{
+		entry:= LogEntry{
+			Term:-1,
+			Index: 0,
+		}
+		return entry
+	}
 	return rf.logEntires[index]
 }
