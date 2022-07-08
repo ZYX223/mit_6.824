@@ -8,12 +8,12 @@ import "math/rand"
 // Timer function
 func (rf *Raft) resetElectionTimer() {
 	t := time.Now()
-	electionTimeout := time.Duration(200 + rand.Intn(150)) * time.Millisecond
+	electionTimeout := time.Duration(150 + rand.Intn(200)) * time.Millisecond
 	rf.electionTime = t.Add(electionTimeout)
 }
 func (rf *Raft) resetVoteTimer() {
 	t := time.Now()
-	VoteTimeout := time.Duration(200+ rand.Intn(150)) * time.Millisecond
+	VoteTimeout := time.Duration(50+ rand.Intn(150)) * time.Millisecond
 	rf.voteTime = t.Add(VoteTimeout)
 }
 

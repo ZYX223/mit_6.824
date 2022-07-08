@@ -261,7 +261,6 @@ func Make(peers []*labrpc.ClientEnd, me int,
 }
 func (rf *Raft) apply() {
 	rf.applyCond.Broadcast()
-	//fmt.Printf("[%v]: rf.applyCond.Broadcast() \n", rf.me)
 }
 
 func (rf *Raft) Applier(){

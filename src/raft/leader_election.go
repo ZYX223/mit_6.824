@@ -135,6 +135,9 @@ func (rf *Raft) candidateSendVote(server int, args *RequestVoteArgs){
 	if ok := rf.sendRequestVote(server,args,&reply); !ok {
 		return
 	}
+	rf.mu.Lock()
+	defer rf.mu.Unlock()
+
 	switch reply.VoteState{
 	case TermLower:
 		fmt.Printf("Server %v TermLower from Server %v \n",rf.me,server)
@@ -153,11 +156,11 @@ func (rf *Raft) candidateSendVote(server int, args *RequestVoteArgs){
 		if rf.voteNums > rf.peers_num/2 && rf.state == Candidate && rf.term == args.Term{
 			fmt.Printf("Server %v has been Leader \n",rf.me)
 			rf.state = Leader
-			// lastLogIndex := rf.getLastLog().Index
-			// for i, _ := range rf.peers {
-			// 	rf.nextIndex[i] = lastLogIndex + 1
-			// 	rf.matchIndex[i] = 0
-			// }
+			lastLogIndex := rf.getLastLog().Index
+			for i, _ := range rf.peers {
+				rf.nextIndex[i] = lastLogIndex+1
+				rf.matchIndex[i] = 0
+			}
 		}
 		return
 	}

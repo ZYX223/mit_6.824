@@ -1,6 +1,5 @@
 package raft
 
-
 // log entry
 type  LogEntry struct{
 	Term int
@@ -36,4 +35,27 @@ func (rf *Raft) getLog(logindex int) LogEntry{
 		return entry
 	}
 	return rf.logEntires[index]
+}
+
+func (rf *Raft)findPreTermLog(curIndex int) LogEntry{
+	curTerm:= rf.getLog(curIndex).Term
+	for index:= curIndex; index>=1;index--{
+		log:= rf.getLog(index)
+		if log.Term != curTerm{
+			return log
+		}
+	}
+	return rf.getLog(0)
+}
+
+func (rf *Raft) findLastLogInTerm(x int) int {
+	for index := rf.getLastLog().Index; index > 0; index-- {
+		term := rf.getLog(index).Term
+		if term == x {
+			return index
+		} else if term < x {
+			break
+		}
+	}
+	return -1
 }
