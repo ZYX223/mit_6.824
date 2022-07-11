@@ -73,6 +73,7 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 	}
 	rf.voteFor = args.CandidateId
 	reply.Term = rf.term
+	rf.persist()
 }
 
 //
@@ -114,6 +115,8 @@ func (rf *Raft) leaderElection(){
 	rf.term +=1
 	rf.state = Candidate
 	rf.voteFor = rf.me
+	// Persister
+	rf.persist()
 	rf.voteNums =1
 	args:= RequestVoteArgs{
 		Term : rf.term,
@@ -161,6 +164,7 @@ func (rf *Raft) candidateSendVote(server int, args *RequestVoteArgs){
 				rf.nextIndex[i] = lastLogIndex+1
 				rf.matchIndex[i] = 0
 			}
+			rf.appendEntiresSend(true)
 		}
 		return
 	}

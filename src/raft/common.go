@@ -23,6 +23,6 @@ func (rf *Raft) setNewTerm(term int) {
 		rf.term = term
 		rf.voteFor = -1
 		fmt.Printf("[%d]: set term %v\n", rf.me, rf.term)
-		//rf.persist()
+		rf.persist()
 	}
 }

@@ -77,7 +77,7 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 	reply.AppendEntriesState = Success
 	// 成功匹配到 进行log复制
 	rf.LogReplicate(preIndex,&args.LogEntires)
-
+	rf.persist()
 	// 更新 commitIndex
 	if args.LeaderCommit >rf.commitIndex{
 		rf.commitIndex = min(args.LeaderCommit,rf.getLastLog().Index)
@@ -182,6 +182,7 @@ func (rf *Raft) leaderSendAppend(server int, args *AppendEntriesArgs){
 	case LogRep_Fail:
 		fmt.Printf("Leader %v AppendEntries LogRep_Fail to %v, nextIndex: %v\n",rf.me,server,rf.nextIndex[server])
 		if reply.ReTerm == 0{
+			
 			rf.nextIndex[server] = reply.ReIndex +1
 		}else{
 			lastLogindex := rf.findLastLogInTerm(reply.ReTerm)
@@ -203,6 +204,9 @@ func (rf *Raft) leaderSendAppend(server int, args *AppendEntriesArgs){
 }
 
 func (rf *Raft) leaderCommit(){
+	if rf.state != Leader {
+		return
+	}
 	for logIndex:= rf.commitIndex+1;logIndex <= rf.getLastLog().Index;logIndex++{
 		if rf.getLog(logIndex).Term != rf.term{
 			continue

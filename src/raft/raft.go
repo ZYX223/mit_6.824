@@ -22,8 +22,8 @@ import "../labrpc"
 import "time"
 import "fmt"
 import "sync"
-// import "bytes"
-// import "../labgob"
+import "bytes"
+import "../labgob"
 
 
 // rf 状态值
@@ -105,12 +105,13 @@ func (rf *Raft) GetState() (int, bool) {
 func (rf *Raft) persist() {
 	// Your code here (2C).
 	// Example:
-	// w := new(bytes.Buffer)
-	// e := labgob.NewEncoder(w)
-	// e.Encode(rf.xxx)
-	// e.Encode(rf.yyy)
-	// data := w.Bytes()
-	// rf.persister.SaveRaftState(data)
+	w := new(bytes.Buffer)
+	e := labgob.NewEncoder(w)
+	e.Encode(rf.term)
+	e.Encode(rf.voteFor)
+	e.Encode(rf.logEntires)
+	data := w.Bytes()
+	rf.persister.SaveRaftState(data)
 }
 
 
@@ -123,17 +124,18 @@ func (rf *Raft) readPersist(data []byte) {
 	}
 	// Your code here (2C).
 	// Example:
-	// r := bytes.NewBuffer(data)
-	// d := labgob.NewDecoder(r)
-	// var xxx
-	// var yyy
-	// if d.Decode(&xxx) != nil ||
-	//    d.Decode(&yyy) != nil {
-	//   error...
-	// } else {
-	//   rf.xxx = xxx
-	//   rf.yyy = yyy
-	// }
+	r := bytes.NewBuffer(data)
+	d := labgob.NewDecoder(r)
+	var term int
+	var voteFor int
+	var logEntires []LogEntry
+	if d.Decode(&term) != nil || d.Decode(&voteFor) != nil || d.Decode(&logEntires) != nil{
+		fmt.Printf("failed to read persist\n")
+	} else {
+	  rf.term = term
+	  rf.voteFor = voteFor
+	  rf.logEntires = logEntires
+	}
 }
 
 
@@ -170,6 +172,7 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 		Command :command,
 	}
 	rf.logEntires = append(rf.logEntires,log)
+	rf.persist()
 	// leader 发送日志包
 	fmt.Printf("[%v] start append log %v\n",rf.me,index)
 	rf.appendEntiresSend(false)
