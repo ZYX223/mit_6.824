@@ -1,5 +1,10 @@
 package raft
 
+import (
+	"fmt"
+	"strings"
+)
+
 // log entry
 type  LogEntry struct{
 	Term int
@@ -14,10 +19,8 @@ func (rf *Raft) getNextEntires(logindex int) [] LogEntry{
 
 func (rf *Raft) LogReplicate(PreIndex int, LogEntires *[]LogEntry){
 	index:=PreIndex-1
-	preEntires:= rf.logEntires[:index+1]
-	nxetEntires:= *LogEntires
-	preEntires = append(preEntires, nxetEntires...)
-	rf.logEntires = preEntires
+	rf.logEntires = rf.logEntires[:index+1]
+	rf.logEntires = append(rf.logEntires,*LogEntires...)
 	return
 }
 
@@ -58,4 +61,17 @@ func (rf *Raft) findLastLogInTerm(x int) int {
 		}
 	}
 	return -1
+}
+
+func (e *LogEntry) String() string {
+	return fmt.Sprint(e.Term)
+}
+
+
+func (rf *Raft) Log2String() string {
+	nums := []string{}
+	for _, entry := range rf.logEntires {
+		nums = append(nums,  fmt.Sprintf("%4d", entry.Term))
+	}
+	return fmt.Sprint(strings.Join(nums, "|"))
 }

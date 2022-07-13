@@ -1,8 +1,6 @@
 package raft
 
 
-import "fmt"
-
 // AppendReply 状态值
 const (
 	Success = 2
@@ -43,6 +41,14 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 	
 	DPrintf("%v has recv AppendEntries from %v \n",rf.me,args.LeaderId)
 	reply.Term = rf.term
+	// term 失效
+	if args.Term > rf.term{
+		rf.setNewTerm(args.Term)
+		DPrintf("[%v] term is vaild \n",rf.me)
+		reply.AppendEntriesState = -1
+		return
+	}
+
 	reply.ReIndex = 0
 	reply.ReTerm = 0
 
@@ -53,21 +59,23 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 		return
 	}
 	rf.resetElectionTimer()
-	
+	if rf.state == Candidate{
+		rf.state = Follower
+	}
 	// 处理 log 一致性
 	preIndex := args.PreLogIndex
 	preTerm :=  args.PreLogTerm		
 	
 	if preIndex > rf.getLastLog().Index{
 		reply.AppendEntriesState = LogRep_Fail
-		fmt.Printf("[%v] LogRep_Fail preIndex: %v, rf.getLastLog().Index: %v, preTerm: %v \n",rf.me,preIndex,
+		DPrintf("[%v] LogRep_Fail preIndex: %v, rf.getLastLog().Index: %v, preTerm: %v \n",rf.me,preIndex,
 		rf.getLastLog().Index,preTerm)
 		reply.ReIndex = rf.getLastLog().Index
 		return 
 	}
 	if rf.getLog(preIndex).Term !=preTerm{
 		reply.AppendEntriesState = LogRep_Fail
-		fmt.Printf("[%v] LogRep_Fail preIndex: %v, rf.getLastLog().Index: %v, preTerm: %v \n",rf.me,preIndex,
+		DPrintf("[%v] LogRep_Fail preIndex: %v, rf.getLastLog().Index: %v, preTerm: %v \n",rf.me,preIndex,
 		rf.getLastLog().Index,preTerm)
 		log:= rf.findPreTermLog(preIndex)
 		reply.ReIndex = log.Index
@@ -76,23 +84,35 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 	}
 	reply.AppendEntriesState = Success
 	// 成功匹配到 进行log复制
-	rf.LogReplicate(preIndex,&args.LogEntires)
-	rf.persist()
+	// rf.LogReplicate(preIndex,&args.LogEntires)
+	// rf.persist()
+	
+	for idx, entry := range args.LogEntires {
+		// append entries rpc 3
+		if entry.Index <= rf.getLastLog().Index && rf.getLog(entry.Index).Term != entry.Term {
+			rf.logEntires = rf.logEntires[:entry.Index-1]
+			DPrintf("[%v] index: %v \n",rf.me,entry.Index)
+			rf.persist()
+		}
+		// append entries rpc 4
+		if entry.Index > rf.getLastLog().Index {
+			rf.logEntires = append(rf.logEntires,args.LogEntires[idx:]...)
+			DPrintf("[%d]: follower append [%v]", rf.me, args.LogEntires[idx:])
+			rf.persist()
+			break
+		}
+	}
+
+
 	// 更新 commitIndex
 	if args.LeaderCommit >rf.commitIndex{
 		rf.commitIndex = min(args.LeaderCommit,rf.getLastLog().Index)
 		rf.apply()
 	}
 
-	if rf.state == Candidate{
-		rf.state = Follower
-	}
 	// 可重新投票
 	rf.voteFor = -1
-	// 更新 term
-	if args.Term > rf.term{
-		rf.setNewTerm(args.Term)
-	}
+	
 }
 
 //
@@ -170,27 +190,27 @@ func (rf *Raft) leaderSendAppend(server int, args *AppendEntriesArgs){
 
 	switch reply.AppendEntriesState{
 	case TermLower:
-		fmt.Printf("Leader %v AppendEntries TermLower \n",rf.me)
+		DPrintf("Leader %v AppendEntries TermLower \n",rf.me)
 		rf.setNewTerm(reply.Term)
 	case Success:
-		//fmt.Printf("Leader %v AppendEntries LogRep_Success to %v\n",rf.me,server)
+		DPrintf("Leader %v AppendEntries LogRep_Success to %v\n",rf.me,server)
 		// 更新 nextIndex matchIndex
 		match:= args.PreLogIndex + len(args.LogEntires)
 		next:= match+1
 		rf.matchIndex[server] = match
 		rf.nextIndex[server] = next
 	case LogRep_Fail:
-		fmt.Printf("Leader %v AppendEntries LogRep_Fail to %v, nextIndex: %v\n",rf.me,server,rf.nextIndex[server])
+		DPrintf("Leader %v AppendEntries LogRep_Fail to %v, nextIndex: %v\n",rf.me,server,rf.nextIndex[server])
 		if reply.ReTerm == 0{
 			
 			rf.nextIndex[server] = reply.ReIndex +1
 		}else{
 			lastLogindex := rf.findLastLogInTerm(reply.ReTerm)
-			fmt.Printf("[%v]: lastLogindex %v\n", rf.me, lastLogindex)
+			DPrintf("[%v]: lastLogindex %v\n", rf.me, lastLogindex)
 			if lastLogindex > 0 {
 				rf.nextIndex[server] = lastLogindex +1
 			} else {
-				fmt.Printf("[%v] reply.ReIndex: %v\n",rf.me,reply.ReIndex)
+				DPrintf("[%v] reply.ReIndex: %v\n",rf.me,reply.ReIndex)
 				rf.nextIndex[server] = reply.ReIndex +1
 			}
 		}
@@ -222,7 +242,7 @@ func (rf *Raft) leaderCommit(){
 			if count > len(rf.peers)/2{
 				rf.commitIndex = logIndex
 				// Apply
-				fmt.Printf("leader %v try to apply logIndex %v to client \n",rf.me,logIndex)
+				DPrintf("leader %v try to apply logIndex %v to client \n",rf.me,logIndex)
 				rf.apply()
 				break
 			}

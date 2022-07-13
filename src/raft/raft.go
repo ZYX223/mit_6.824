@@ -24,13 +24,12 @@ import "fmt"
 import "sync"
 import "bytes"
 import "../labgob"
-
-
+import "strings"
 // rf 状态值
 const (
-	Follower = 1
-	Candidate = 2
-	Leader = 3
+	Follower = "Follower"
+	Candidate = "Candidate"
+	Leader = "Leader"
 ) 
 
 //
@@ -49,7 +48,7 @@ type ApplyMsg struct {
 	Command      interface{}
 	CommandIndex int
 }
-
+type RaftState string
 //
 // A Go object implementing a single Raft peer.
 //
@@ -63,7 +62,7 @@ type Raft struct {
 	// vote 相关
 	term	  int				  // currentTerm
 	isleader  bool
-	state     int				  // rf 状态值 follower/candidate/leader
+	state     RaftState				  // rf 状态值 follower/candidate/leader
 	voteNums  int                 // 选票数量
 	voteFor   int                 // 投票给谁
 	// Timer 相关
@@ -105,6 +104,7 @@ func (rf *Raft) GetState() (int, bool) {
 func (rf *Raft) persist() {
 	// Your code here (2C).
 	// Example:
+	DPrintf("[%v]: STATE: %v \n", rf.me, rf.Log2String())
 	w := new(bytes.Buffer)
 	e := labgob.NewEncoder(w)
 	e.Encode(rf.term)
@@ -130,7 +130,7 @@ func (rf *Raft) readPersist(data []byte) {
 	var voteFor int
 	var logEntires []LogEntry
 	if d.Decode(&term) != nil || d.Decode(&voteFor) != nil || d.Decode(&logEntires) != nil{
-		fmt.Printf("failed to read persist\n")
+		DPrintf("failed to read persist\n")
 	} else {
 	  rf.term = term
 	  rf.voteFor = voteFor
@@ -160,12 +160,12 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 
 	index := -1
 	term := rf.term
-	isLeader := rf.state == Leader
-	if !isLeader{
+	
+	if rf.state != Leader{
 		return index, term, false
 	}
 	// Your code here (2B).
-	index = len(rf.logEntires) +1
+	index = rf.getLastLog().Index +1
 	log:=LogEntry{
 		Term :term,
 		Index: index,
@@ -174,9 +174,9 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 	rf.logEntires = append(rf.logEntires,log)
 	rf.persist()
 	// leader 发送日志包
-	fmt.Printf("[%v] start append log %v\n",rf.me,index)
+	DPrintf("[%v] start append log %v\n",rf.me,index)
 	rf.appendEntiresSend(false)
-	return index, term, isLeader
+	return index, term, true
 }
 
 //
@@ -211,24 +211,22 @@ func (rf *Raft) killed() bool {
 // Make() must return quickly, so it should start goroutines
 // for any long-running work.
 //
-func (rf *Raft) Ticker(){
-	for !rf.killed(){
-		switch rf.state{
-		case Follower:
-			if time.Now().After(rf.electionTime) {
-				fmt.Printf("%v ElectionTimeOut \n",rf.me)
-				rf.leaderElection()
-			}
-		case Candidate:
-			if time.Now().After(rf.voteTime) {
-				fmt.Printf("%v VoteTimeOut \n",rf.me)
-				rf.leaderElection()
-			}
-		case Leader:
-			// 不含Log 的心跳包
+
+func (rf *Raft) ticker() {
+	for rf.killed() == false {
+
+		// Your code here to check if a leader election should
+		// be started and to randomize sleeping time using
+		// time.Sleep().
+		time.Sleep(rf.heartBeat)
+		rf.mu.Lock()
+		if rf.state == Leader {
 			rf.appendEntiresSend(true)
-			time.Sleep(rf.heartBeat)
 		}
+		if time.Now().After(rf.electionTime) {
+			rf.leaderElection()
+		}
+		rf.mu.Unlock()
 	}
 }
 
@@ -258,7 +256,7 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	// initialize from state persisted before a crash
 	rf.readPersist(persister.ReadRaftState())
 
-	go rf.Ticker()
+	go rf.ticker()
 	go rf.Applier()
 	return rf
 }
@@ -278,6 +276,7 @@ func (rf *Raft) Applier(){
 				Command:       rf.getLog(rf.lastApplied).Command,
 				CommandIndex:  rf.lastApplied,
 			}
+			//fmt.Printf("[%v]: COMMIT %d: %v", rf.me, rf.lastApplied, rf.commits())
 			rf.mu.Unlock()
 			rf.applyCh <- applyMsg
 			rf.mu.Lock()
@@ -285,4 +284,12 @@ func (rf *Raft) Applier(){
 			rf.applyCond.Wait()
 		}
 	}
+}
+
+func (rf *Raft) commits() string {
+	nums := []string{}
+	for i := 0; i <= rf.lastApplied; i++ {
+		nums = append(nums, fmt.Sprintf("%4d", rf.getLog(i).Command))
+	}
+	return fmt.Sprint(strings.Join(nums, "|"))
 }

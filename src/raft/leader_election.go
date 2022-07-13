@@ -1,8 +1,6 @@
 package raft
 
 
-import "fmt"
-
 // voteReply 状态值
 const (
 	VoteSuccess = 1 // 投票成功
@@ -44,8 +42,12 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 	// Your code here (2A, 2B).
 	rf.mu.Lock()
 	defer rf.mu.Unlock()
-	fmt.Printf("%v has recv RequestVote from %v \n",rf.me,args.CandidateId)
+	DPrintf("%v has recv RequestVote from %v \n",rf.me,args.CandidateId)
 	
+	// rf term 更新
+	if args.Term > rf.term{
+		rf.setNewTerm(args.Term)
+	}
 	// 请求者任期低
 	if args.Term < rf.term{
 		reply.Term = rf.term
@@ -58,7 +60,7 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 		return
 	}
 	// 已投票
-	if rf.voteFor != -1 && rf.voteFor != rf.me{
+	if rf.voteFor != -1 && rf.voteFor != args.CandidateId{
 		reply.Term = rf.term
 		reply.VoteState = HasVoted
 		return
@@ -67,10 +69,7 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 	rf.resetElectionTimer()
 	// 投票成功
 	reply.VoteState = VoteSuccess
-	// rf term 更新
-	if args.Term > rf.term{
-		rf.setNewTerm(args.Term)
-	}
+	
 	rf.voteFor = args.CandidateId
 	reply.Term = rf.term
 	rf.persist()
@@ -117,12 +116,15 @@ func (rf *Raft) leaderElection(){
 	rf.voteFor = rf.me
 	// Persister
 	rf.persist()
+	rf.resetElectionTimer()
 	rf.voteNums =1
+	lastLog:=rf.getLastLog()
+	DPrintf("[%v]: start leader election, term %d\n", rf.me, rf.term)
 	args:= RequestVoteArgs{
 		Term : rf.term,
 		CandidateId: rf.me,
-		LastLogIndex: rf.getLastLog().Index,
-		LastLogTerm: rf.getLastLog().Term,
+		LastLogIndex: lastLog.Index,
+		LastLogTerm: lastLog.Term,
 	}
 	for server:=0;server<len(rf.peers);server++{
 		if server == rf.me{
@@ -130,7 +132,6 @@ func (rf *Raft) leaderElection(){
 		}
 		go rf.candidateSendVote(server,&args)
 	}
-	rf.resetVoteTimer()
 }
 
 func (rf *Raft) candidateSendVote(server int, args *RequestVoteArgs){
@@ -143,21 +144,25 @@ func (rf *Raft) candidateSendVote(server int, args *RequestVoteArgs){
 
 	switch reply.VoteState{
 	case TermLower:
-		fmt.Printf("Server %v TermLower from Server %v \n",rf.me,server)
+		DPrintf("Server %v TermLower from Server %v \n",rf.me,server)
 		rf.setNewTerm(reply.Term)
 		return
 	case LogLower:
-		fmt.Printf("Server %v LogLower from Server %v\n",rf.me,server)
+		DPrintf("Server %v LogLower from Server %v\n",rf.me,server)
 		return
 	case HasVoted:
-		fmt.Printf("Server %v HasVoted Request is %v\n",server,rf.me)
+		DPrintf("Server %v HasVoted Request is %v\n",server,rf.me)
 		return
 	case VoteSuccess:
-		fmt.Printf("Server %v VoteSuccess to %v\n",server,rf.me)
+		DPrintf("Server %v VoteSuccess to %v\n",server,rf.me)
+		if reply.Term < args.Term{
+			DPrintf("[%d]: %d 的term %d 已经失效，结束\n", rf.me, server, reply.Term)
+			return
+		}
 		rf.voteNums +=1
 		// BecomeLeader
-		if rf.voteNums > rf.peers_num/2 && rf.state == Candidate && rf.term == args.Term{
-			fmt.Printf("Server %v has been Leader \n",rf.me)
+		if rf.voteNums > len(rf.peers)/2 && rf.state == Candidate && rf.term == args.Term{
+			DPrintf("Server %v has been Leader \n",rf.me)
 			rf.state = Leader
 			lastLogIndex := rf.getLastLog().Index
 			for i, _ := range rf.peers {
