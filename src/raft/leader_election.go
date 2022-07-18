@@ -3,10 +3,10 @@ package raft
 
 // voteReply 状态值
 const (
-	VoteSuccess = 1 // 投票成功
-	HasVoted = 2    // 已投票不能重复投
-	TermLower = 3	// 任期过低拒绝投票 (退化为Follower)
-	LogLower = 4	// 日志完整性过低拒绝投票 (不退化)
+	VoteSuccess = "VoteSuccess" // 投票成功
+	HasVoted = "HasVoted"    // 已投票不能重复投
+	TermLower = "TermLower"	// 任期过低拒绝投票 (退化为Follower)
+	LogLower = "LogLower"	// 日志完整性过低拒绝投票 (不退化)
 )
 
 //
@@ -28,7 +28,7 @@ type RequestVoteArgs struct {
 type RequestVoteReply struct {
 	// Your data here (2A).
 	Term  int
-	VoteState int // 投票状态
+	VoteState string // 投票状态
 }
 
 //
@@ -55,7 +55,8 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 		return
 	} 
 	// 日志完整性过低拒绝投票
-	if args.LastLogTerm < rf.getLastLog().Term || (args.LastLogTerm == rf.getLastLog().Term && args.LastLogIndex <rf.getLastLog().Index){
+	lastLog:=rf.getLastLog()
+	if args.LastLogTerm < lastLog.Term || (args.LastLogTerm == lastLog.Term && args.LastLogIndex <lastLog.Index){
 		reply.VoteState = LogLower
 		return
 	}
@@ -114,7 +115,7 @@ func (rf *Raft) leaderElection(){
 	rf.term +=1
 	rf.state = Candidate
 	rf.voteFor = rf.me
-	// Persister
+	
 	rf.persist()
 	rf.resetElectionTimer()
 	rf.voteNums =1
@@ -155,10 +156,6 @@ func (rf *Raft) candidateSendVote(server int, args *RequestVoteArgs){
 		return
 	case VoteSuccess:
 		DPrintf("Server %v VoteSuccess to %v\n",server,rf.me)
-		if reply.Term < args.Term{
-			DPrintf("[%d]: %d 的term %d 已经失效，结束\n", rf.me, server, reply.Term)
-			return
-		}
 		rf.voteNums +=1
 		// BecomeLeader
 		if rf.voteNums > len(rf.peers)/2 && rf.state == Candidate && rf.term == args.Term{

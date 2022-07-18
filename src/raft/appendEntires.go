@@ -3,8 +3,9 @@ package raft
 
 // AppendReply 状态值
 const (
-	Success = 2
-	LogRep_Fail = 4
+	Success = "Success"
+	LogRep_Fail = "LogRep_Fail"
+	Term_Invalid = "Term_Invalid"
 )
 //
 // example RequestVote RPC arguments structure.
@@ -25,7 +26,7 @@ type AppendEntriesArgs struct{
 
 type AppendEntriesReply struct{
 	Term int
-	AppendEntriesState int
+	AppendEntriesState string
 	ReIndex int
 	ReTerm int
 }
@@ -45,7 +46,7 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 	if args.Term > rf.term{
 		rf.setNewTerm(args.Term)
 		DPrintf("[%v] term is vaild \n",rf.me)
-		reply.AppendEntriesState = -1
+		reply.AppendEntriesState = Term_Invalid
 		return
 	}
 
@@ -79,30 +80,31 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 		rf.getLastLog().Index,preTerm)
 		log:= rf.findPreTermLog(preIndex)
 		reply.ReIndex = log.Index
-		reply.ReTerm = log.Term
+		reply.ReTerm = rf.getLog(preIndex).Term
+		DPrintf("[%v] LogRep_Fail reply.ReIndex: %v, reply.ReTerm: %v, \n",rf.me,reply.ReIndex,reply.ReTerm)
+
 		return
 	}
 	reply.AppendEntriesState = Success
 	// 成功匹配到 进行log复制
-	// rf.LogReplicate(preIndex,&args.LogEntires)
-	// rf.persist()
+	rf.LogReplicate(preIndex,&args.LogEntires)
+	rf.persist()
 	
-	for idx, entry := range args.LogEntires {
-		// append entries rpc 3
-		if entry.Index <= rf.getLastLog().Index && rf.getLog(entry.Index).Term != entry.Term {
-			rf.logEntires = rf.logEntires[:entry.Index-1]
-			DPrintf("[%v] index: %v \n",rf.me,entry.Index)
-			rf.persist()
-		}
-		// append entries rpc 4
-		if entry.Index > rf.getLastLog().Index {
-			rf.logEntires = append(rf.logEntires,args.LogEntires[idx:]...)
-			DPrintf("[%d]: follower append [%v]", rf.me, args.LogEntires[idx:])
-			rf.persist()
-			break
-		}
-	}
-
+	// for idx, entry := range args.LogEntires {
+	// 	// append entries rpc 3
+	// 	if entry.Index <= rf.getLastLog().Index && rf.getLog(entry.Index).Term != entry.Term {
+	// 		rf.logEntires = rf.logEntires[:entry.Index-1]
+	// 		DPrintf("[%v] index: %v \n",rf.me,entry.Index)
+	// 		rf.persist()
+	// 	}
+	// 	// append entries rpc 4
+	// 	if entry.Index > rf.getLastLog().Index {
+	// 		rf.logEntires = append(rf.logEntires,args.LogEntires[idx:]...)
+	// 		DPrintf("[%d]: follower append [%v]", rf.me, args.LogEntires[idx:])
+	// 		rf.persist()
+	// 		break
+	// 	}
+	// }
 
 	// 更新 commitIndex
 	if args.LeaderCommit >rf.commitIndex{
@@ -112,7 +114,6 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 
 	// 可重新投票
 	rf.voteFor = -1
-	
 }
 
 //
@@ -202,7 +203,6 @@ func (rf *Raft) leaderSendAppend(server int, args *AppendEntriesArgs){
 	case LogRep_Fail:
 		DPrintf("Leader %v AppendEntries LogRep_Fail to %v, nextIndex: %v\n",rf.me,server,rf.nextIndex[server])
 		if reply.ReTerm == 0{
-			
 			rf.nextIndex[server] = reply.ReIndex +1
 		}else{
 			lastLogindex := rf.findLastLogInTerm(reply.ReTerm)
@@ -213,6 +213,11 @@ func (rf *Raft) leaderSendAppend(server int, args *AppendEntriesArgs){
 				DPrintf("[%v] reply.ReIndex: %v\n",rf.me,reply.ReIndex)
 				rf.nextIndex[server] = reply.ReIndex +1
 			}
+		}
+	case Term_Invalid:
+		DPrintf("Leader %v AppendEntries Term_Invalid  %v\n",rf.me,server)
+		if rf.nextIndex[server] > 1 {
+			rf.nextIndex[server]--
 		}
 	default:
 		if rf.nextIndex[server] > 1 {
